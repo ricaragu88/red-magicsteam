@@ -17,18 +17,21 @@ import {
   ArrowRight,
   ShieldCheck,
   FileText,
+  Mail,
 } from "lucide-react";
 
 interface ProjectModalProps {
   project: ProjectItem | null;
   onClose: () => void;
   onReplicate: (project: ProjectItem) => void;
+  onContactAuthor?: (project: ProjectItem) => void;
 }
 
 export const ProjectModal: React.FC<ProjectModalProps> = ({
   project,
   onClose,
   onReplicate,
+  onContactAuthor,
 }) => {
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -100,17 +103,29 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({
             </p>
 
             {/* Author card badge */}
-            <div className="flex items-center gap-3 pt-2">
-              <img
-                src={project.author.avatar}
-                alt={project.author.name}
-                className="w-12 h-12 rounded-full object-cover border border-stone-200 dark:border-stone-700 shadow-xs"
-              />
-              <div>
-                <p className="font-extrabold text-stone-950 dark:text-white text-sm">{project.author.name}</p>
-                <p className="text-xs text-stone-500 dark:text-stone-400">{project.author.role} · {project.author.school}</p>
-                <p className="text-[11px] text-rose-900 dark:text-rose-400 font-bold">{project.author.teacherPrizeEdition}</p>
+            <div className="flex items-center justify-between flex-wrap gap-3 pt-2">
+              <div className="flex items-center gap-3">
+                <img
+                  src={project.author.avatar}
+                  alt={project.author.name}
+                  className="w-12 h-12 rounded-full object-cover border border-stone-200 dark:border-stone-700 shadow-xs"
+                />
+                <div>
+                  <p className="font-extrabold text-stone-950 dark:text-white text-sm">{project.author.name}</p>
+                  <p className="text-xs text-stone-500 dark:text-stone-400">{project.author.role} · {project.author.school}</p>
+                  <p className="text-[11px] text-rose-900 dark:text-rose-400 font-bold">{project.author.teacherPrizeEdition}</p>
+                </div>
               </div>
+
+              {onContactAuthor && (
+                <button
+                  onClick={() => onContactAuthor(project)}
+                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-bold bg-stone-100 hover:bg-stone-200 dark:bg-stone-800 dark:hover:bg-stone-700 text-stone-800 dark:text-stone-200 border border-stone-300 dark:border-stone-700 shadow-xs cursor-pointer active:scale-95 transition-all"
+                >
+                  <Mail className="w-3.5 h-3.5 text-rose-900 dark:text-rose-400" />
+                  <span>Contactar con el autor</span>
+                </button>
+              )}
             </div>
           </div>
 
@@ -329,6 +344,16 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({
             >
               Cerrar
             </button>
+
+            {onContactAuthor && (
+              <button
+                onClick={() => onContactAuthor(project)}
+                className="flex-1 sm:flex-none inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-full text-xs font-bold bg-stone-100 hover:bg-stone-200 dark:bg-stone-800 dark:hover:bg-stone-700 text-stone-800 dark:text-stone-200 border border-stone-300 dark:border-stone-700 transition-colors cursor-pointer whitespace-nowrap shadow-xs"
+              >
+                <Mail className="w-4 h-4 text-rose-900 dark:text-rose-400" />
+                <span>Contactar</span>
+              </button>
+            )}
 
             <button
               onClick={() => onReplicate(project)}

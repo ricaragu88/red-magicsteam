@@ -9,6 +9,7 @@ interface ProjectsExplorerProps {
   projects: ProjectItem[];
   onSelectProject: (project: ProjectItem) => void;
   onReplicateProject: (project: ProjectItem) => void;
+  onContactProject?: (project: ProjectItem) => void;
   onOpenPublish: () => void;
 }
 
@@ -16,6 +17,7 @@ export const ProjectsExplorer: React.FC<ProjectsExplorerProps> = ({
   projects,
   onSelectProject,
   onReplicateProject,
+  onContactProject,
   onOpenPublish,
 }) => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -113,6 +115,7 @@ export const ProjectsExplorer: React.FC<ProjectsExplorerProps> = ({
               project={project}
               onSelect={onSelectProject}
               onReplicate={onReplicateProject}
+              onContactAuthor={onContactProject}
             />
           ))}
 

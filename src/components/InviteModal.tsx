@@ -15,13 +15,15 @@ export const InviteModal: React.FC<InviteModalProps> = ({ isOpen, onClose }) => 
 
   if (!isOpen) return null;
 
-  const inviteLink = `https://red.magicsteam.org/unirse?premio=${encodeURIComponent(awardType)}&ref=ricardo-lanuza`;
+  const inviteLink = `https://red.magicsteam.org/?invitacion=${encodeURIComponent(awardType)}`;
 
   const whatsappMessage = `👋 ¡Hola compañeros de ${awardType}!
 Os comparto la iniciativa que estamos poniendo en marcha entre docentes galardonados: la Red Nacional de Innovación Docente (red.magicsteam.org).
 El objetivo es publicar nuestros proyectos en formato 'Playbook Replicable' para que podamos conocerlos, replicarlos en nuestros centros y propiciar hermanamientos entre aulas.
-Podéis verla y compartir vuestro proyecto desde esta invitación:
+Podéis verla y compartir vuestro proyecto desde esta invitación exclusiva:
 👉 ${inviteLink}`;
+
+  const whatsappDirectUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(whatsappMessage)}`;
 
   const copyToClipboard = (text: string, isMsg: boolean) => {
     navigator.clipboard.writeText(text);
@@ -127,6 +129,18 @@ Podéis verla y compartir vuestro proyecto desde esta invitación:
 
             <div className="p-4 bg-stone-50 dark:bg-stone-950 border border-stone-200 dark:border-stone-800 rounded-2xl text-xs text-stone-700 dark:text-stone-300 leading-relaxed font-sans whitespace-pre-wrap">
               {whatsappMessage}
+            </div>
+
+            <div className="flex items-center justify-end pt-1">
+              <a
+                href={whatsappDirectUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-bold bg-emerald-700 hover:bg-emerald-800 text-white shadow-xs transition-all cursor-pointer"
+              >
+                <MessageCircle className="w-3.5 h-3.5" />
+                <span>Abrir en WhatsApp Web / App</span>
+              </a>
             </div>
           </div>
 

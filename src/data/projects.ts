@@ -33,6 +33,7 @@ export interface ProjectItem {
     location: string;
     avatar: string;
     teacherPrizeEdition?: string;
+    email?: string;
   };
   image: string;
   videoUrl?: string;
@@ -71,7 +72,8 @@ export const REAL_PROJECTS_DATA: ProjectItem[] = [
       school: "Colegio Juan de Lanuza",
       location: "Zaragoza, Aragón",
       avatar: "/images/docenteRicardo-aguado-1.jpg",
-      teacherPrizeEdition: "National Teacher Prize 2026"
+      teacherPrizeEdition: "National Teacher Prize 2026",
+      email: "info@tecnodivergente.es"
     },
     image: "/images/masvidamenosredes.jpg",
     videoUrl: "https://www.youtube.com/watch?v=pd3_mC_vYn4",
@@ -159,7 +161,8 @@ export const REAL_PROJECTS_DATA: ProjectItem[] = [
       school: "Colegio Juan de Lanuza",
       location: "Zaragoza, Aragón",
       avatar: "/images/docenteRicardo-aguado-1.jpg",
-      teacherPrizeEdition: "National Teacher Prize 2026"
+      teacherPrizeEdition: "National Teacher Prize 2026",
+      email: "info@tecnodivergente.es"
     },
     image: "/images/WhatsApp-Image-2026-04-05-at-09.25.41.jpeg",
     videoUrl: "https://www.youtube.com/watch?v=_f9OhferiS8",

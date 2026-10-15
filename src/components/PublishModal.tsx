@@ -1,36 +1,64 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { ProjectItem } from "@/data/projects";
-import { X, FilePlus, Sparkles, CheckCircle2, ArrowRight, Zap, Euro, Clock } from "lucide-react";
+import { UserProfile } from "./IdentityModal";
+import { X, FilePlus, Sparkles, CheckCircle2, ArrowRight, Zap, Image as ImageIcon, Upload, Trash2 } from "lucide-react";
 
 interface PublishModalProps {
   isOpen: boolean;
   onClose: () => void;
   onAddProject: (project: ProjectItem) => void;
+  currentUser?: UserProfile | null;
 }
 
 export const PublishModal: React.FC<PublishModalProps> = ({
   isOpen,
   onClose,
   onAddProject,
+  currentUser,
 }) => {
   const [title, setTitle] = useState("");
   const [subtitle, setSubtitle] = useState("");
   const [category, setCategory] = useState("Bienestar Digital & Convivencia");
-  const [award, setAward] = useState("Finalista / Ganador National Teacher Prize");
-  const [authorName, setAuthorName] = useState("");
-  const [school, setSchool] = useState("");
+  const [award, setAward] = useState(currentUser?.award || "National Teacher Prize 2026");
+  const [authorName, setAuthorName] = useState(currentUser?.name || "");
+  const [school, setSchool] = useState(currentUser?.school ? `${currentUser.school} (${currentUser.location})` : "");
   const [budget, setBudget] = useState("0 € (materiales reciclados o cesión)");
   const [duration, setDuration] = useState("4 semanas");
   const [externalReqs, setExternalReqs] = useState("");
   const [classroomPrep, setClassroomPrep] = useState("");
   const [summary, setSummary] = useState("");
 
+  // Image Upload state
+  const [imagePreview, setImagePreview] = useState<string>("/images/portadaTecnodivergente.jpg");
+  const [imageName, setImageName] = useState<string>("");
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
   const [score, setScore] = useState<number | null>(null);
   const [isCalculating, setIsCalculating] = useState(false);
 
   if (!isOpen) return null;
+
+  // Handle local image file selection
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setImageName(file.name);
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        if (event.target?.result) {
+          setImagePreview(event.target.result as string);
+        }
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleSelectPreset = (url: string, name: string) => {
+    setImagePreview(url);
+    setImageName(name);
+  };
 
   const handleCalculateScore = () => {
     setIsCalculating(true);
@@ -62,9 +90,9 @@ export const PublishModal: React.FC<PublishModalProps> = ({
         school: school || "Centro Educativo",
         location: "España",
         avatar: "/images/docenteRicardo-aguado-1.jpg",
-        teacherPrizeEdition: "Galardonado"
+        teacherPrizeEdition: currentUser?.award || "Docente Galardonado"
       },
-      image: "/images/portadaTecnodivergente.jpg",
+      image: imagePreview || "/images/portadaTecnodivergente.jpg",
       replicabilityScore: score || 88,
       replicationsCount: 1,
       studentsImpacted: 90,
@@ -96,7 +124,7 @@ export const PublishModal: React.FC<PublishModalProps> = ({
     };
 
     onAddProject(newProject);
-    alert("¡Proyecto añadido con éxito a la Red!");
+    alert("¡Proyecto publicado con éxito en la Red!");
     onClose();
   };
 
@@ -125,17 +153,99 @@ export const PublishModal: React.FC<PublishModalProps> = ({
         </div>
 
         {/* Form Body */}
-        <form onSubmit={handleSubmit} className="overflow-y-auto p-6 sm:p-8 space-y-5 text-xs">
+        <form onSubmit={handleSubmit} className="overflow-y-auto p-6 sm:p-8 space-y-6 text-xs">
           
           <div className="space-y-1">
             <h3 className="text-lg font-black text-stone-950 dark:text-white">
               Comparte tu proyecto premiado con otros docentes
             </h3>
             <p className="text-stone-600 dark:text-stone-400">
-              Rellena los aspectos prácticos para que cualquier colegio o instituto pueda adaptarlo a su aula.
+              Rellena los aspectos prácticos y añade una fotografía para que otros centros puedan conocerlo y replicarlo.
             </p>
           </div>
 
+          {/* Image Uploader & Preview */}
+          <div className="space-y-2">
+            <label className="block font-bold text-stone-700 dark:text-stone-300">
+              Fotografía de Portada del Proyecto:
+            </label>
+            
+            <div className="flex flex-col sm:flex-row items-center gap-4 p-4 rounded-2xl bg-stone-50 dark:bg-stone-950 border border-stone-200 dark:border-stone-800">
+              {/* Preview Box */}
+              <div className="relative w-36 h-24 rounded-xl overflow-hidden bg-stone-200 dark:bg-stone-800 shrink-0 border border-stone-300 dark:border-stone-700 shadow-xs">
+                {imagePreview ? (
+                  <img
+                    src={imagePreview}
+                    alt="Vista previa"
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <div className="w-full h-full flex flex-col items-center justify-center text-stone-400 text-[10px]">
+                    <ImageIcon className="w-6 h-6 mb-1" />
+                    <span>Sin imagen</span>
+                  </div>
+                )}
+              </div>
+
+              {/* Upload Controls */}
+              <div className="space-y-2 flex-1 w-full text-center sm:text-left">
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  accept="image/png, image/jpeg, image/webp"
+                  onChange={handleFileChange}
+                  className="hidden"
+                />
+
+                <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2">
+                  <button
+                    type="button"
+                    onClick={() => fileInputRef.current?.click()}
+                    className="px-4 py-2 rounded-full font-bold text-xs bg-stone-900 hover:bg-stone-800 dark:bg-stone-100 dark:hover:bg-white text-white dark:text-stone-900 flex items-center gap-1.5 shadow-xs cursor-pointer"
+                  >
+                    <Upload className="w-3.5 h-3.5" />
+                    <span>Subir Foto de mi Dispositivo</span>
+                  </button>
+
+                  {imageName && (
+                    <span className="text-[11px] text-stone-500 font-medium truncate max-w-[180px]">
+                      {imageName}
+                    </span>
+                  )}
+                </div>
+
+                {/* Preset Options */}
+                <div className="text-[11px] text-stone-500">
+                  <span>O usa una foto del archivo: </span>
+                  <button
+                    type="button"
+                    onClick={() => handleSelectPreset("/images/masvidamenosredes.jpg", "Móviles y Aula")}
+                    className="text-rose-950 dark:text-rose-400 font-bold hover:underline ml-1 cursor-pointer"
+                  >
+                    Aula y Convivencia
+                  </button>
+                  <span className="mx-1">·</span>
+                  <button
+                    type="button"
+                    onClick={() => handleSelectPreset("/images/kit-lanuza.jpg", "Kit Robótica")}
+                    className="text-rose-950 dark:text-rose-400 font-bold hover:underline cursor-pointer"
+                  >
+                    STEAM & Kits
+                  </button>
+                  <span className="mx-1">·</span>
+                  <button
+                    type="button"
+                    onClick={() => handleSelectPreset("/images/reciclaje.jpg", "Reciclaje")}
+                    className="text-rose-950 dark:text-rose-400 font-bold hover:underline cursor-pointer"
+                  >
+                    Medioambiente
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Form Fields */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label className="block font-bold text-stone-700 dark:text-stone-300 mb-1">Título del Proyecto:</label>

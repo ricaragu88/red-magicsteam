@@ -4,7 +4,17 @@ import React, { useState } from "react";
 import { REAL_SYNERGIES, SynergyMatch } from "@/data/projects";
 import { Network, ArrowRight, Zap, CheckCircle2, MessageSquare, Send, Sparkles, RefreshCw, School, Users } from "lucide-react";
 
-export const AISynergyEngine: React.FC = () => {
+interface AISynergyEngineProps {
+  onContactAuthor?: (target: {
+    authorName: string;
+    authorEmail: string;
+    school: string;
+    projectTitle: string;
+    initialMessage?: string;
+  }) => void;
+}
+
+export const AISynergyEngine: React.FC<AISynergyEngineProps> = ({ onContactAuthor }) => {
   const [activeTab, setActiveTab] = useState<"detected" | "custom">("detected");
   
   // Custom query state
@@ -164,8 +174,20 @@ export const AISynergyEngine: React.FC = () => {
                 <div className="pt-4 border-t border-stone-200 dark:border-stone-800 flex items-center justify-between gap-3">
                   <span className="text-[11px] text-stone-500">¿Interesado en participar?</span>
                   <button
-                    onClick={() => alert(`Propuesta registrada: Notificaremos a los coordinadores de la red para facilitar el hermanamiento con tu centro.`)}
-                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-bold bg-stone-900 hover:bg-stone-800 dark:bg-stone-100 dark:hover:bg-white text-white dark:text-stone-900 transition-all cursor-pointer shadow-xs"
+                    onClick={() => {
+                      if (onContactAuthor) {
+                        onContactAuthor({
+                          authorName: "Ricardo Aguado",
+                          authorEmail: "info@tecnodivergente.es",
+                          school: "Colegio Juan de Lanuza",
+                          projectTitle: syn.sourceProject,
+                          initialMessage: `Hola Ricardo,\n\nTe contacto desde la Red Nacional de Innovación Docente. Hemos visto la propuesta de hermanamiento pedagógico en torno a "${syn.sourceProject}" (${syn.actionPact}).\n\nNos gustaría sumarnos desde nuestro centro educativo para colaborar de aula a aula.\n\n¿Podríamos ponernos en contacto para coordinar los primeros pasos?\n\nUn cordial saludo,`
+                        });
+                      } else {
+                        alert("Propuesta registrada: Notificaremos a los coordinadores de la red para facilitar el hermanamiento con tu centro.");
+                      }
+                    }}
+                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-bold bg-stone-900 hover:bg-stone-800 dark:bg-stone-100 dark:hover:bg-white text-white dark:text-stone-900 transition-all cursor-pointer shadow-xs active:scale-95"
                   >
                     <MessageSquare className="w-3.5 h-3.5" />
                     <span>Conectar</span>
@@ -280,15 +302,35 @@ export const AISynergyEngine: React.FC = () => {
                   <div className="p-3 bg-white dark:bg-stone-950 rounded-lg text-xs font-sans text-stone-700 dark:text-stone-300 select-all border border-stone-200 dark:border-stone-800">
                     {generatedSynergy.suggestedEmail}
                   </div>
-                  <button
-                    onClick={() => {
-                      navigator.clipboard.writeText(generatedSynergy.suggestedEmail);
-                      alert("Borrador copiado al portapapeles");
-                    }}
-                    className="text-xs font-bold text-rose-900 dark:text-rose-400 hover:underline cursor-pointer"
-                  >
-                    Copiar texto para enviar por correo
-                  </button>
+                  <div className="flex items-center justify-between gap-2 pt-1">
+                    <button
+                      onClick={() => {
+                        navigator.clipboard.writeText(generatedSynergy.suggestedEmail);
+                        alert("Borrador copiado al portapapeles");
+                      }}
+                      className="text-xs font-bold text-stone-600 dark:text-stone-400 hover:underline cursor-pointer"
+                    >
+                      Copiar texto
+                    </button>
+
+                    {onContactAuthor && (
+                      <button
+                        onClick={() => {
+                          onContactAuthor({
+                            authorName: "Ricardo Aguado",
+                            authorEmail: "info@tecnodivergente.es",
+                            school: "Colegio Juan de Lanuza",
+                            projectTitle: generatedSynergy.recommendedProject,
+                            initialMessage: generatedSynergy.suggestedEmail,
+                          });
+                        }}
+                        className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-bold bg-rose-950 hover:bg-rose-900 text-white shadow-xs transition-all cursor-pointer"
+                      >
+                        <Send className="w-3.5 h-3.5" />
+                        <span>Contactar con el Autor</span>
+                      </button>
+                    )}
+                  </div>
                 </div>
               </div>
             )}

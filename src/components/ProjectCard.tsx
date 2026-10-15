@@ -2,15 +2,16 @@
 
 import React from "react";
 import { ProjectItem } from "@/data/projects";
-import { Award, ArrowUpRight, School, Users, FileText, Zap } from "lucide-react";
+import { Award, ArrowUpRight, School, Users, FileText, Zap, Mail } from "lucide-react";
 
 interface ProjectCardProps {
   project: ProjectItem;
   onSelect: (project: ProjectItem) => void;
   onReplicate: (project: ProjectItem) => void;
+  onContactAuthor?: (project: ProjectItem) => void;
 }
 
-export const ProjectCard: React.FC<ProjectCardProps> = ({ project, onSelect, onReplicate }) => {
+export const ProjectCard: React.FC<ProjectCardProps> = ({ project, onSelect, onReplicate, onContactAuthor }) => {
   const getScoreBadge = (score: number) => {
     if (score >= 90) return "bg-emerald-50 text-emerald-950 dark:bg-emerald-950/80 dark:text-emerald-200 border-emerald-200 dark:border-emerald-800";
     if (score >= 85) return "bg-amber-50 text-amber-950 dark:bg-amber-950/80 dark:text-amber-200 border-amber-200 dark:border-amber-800";
@@ -118,6 +119,17 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({ project, onSelect, onR
           <FileText className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
           <span>Ver Playbook</span>
         </button>
+
+        {onContactAuthor && (
+          <button
+            onClick={() => onContactAuthor(project)}
+            className="p-2.5 rounded-full bg-stone-100 hover:bg-stone-200 dark:bg-stone-800 dark:hover:bg-stone-700 text-stone-700 dark:text-stone-200 border border-stone-200 dark:border-stone-700 transition-colors cursor-pointer shadow-xs active:scale-95"
+            title="Contactar con el autor"
+            aria-label="Contactar con el autor"
+          >
+            <Mail className="w-4 h-4 text-rose-900 dark:text-rose-400" />
+          </button>
+        )}
 
         <button
           onClick={() => onReplicate(project)}
