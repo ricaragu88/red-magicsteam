@@ -11,6 +11,7 @@ import { InviteModal } from "@/components/InviteModal";
 import { PublishModal } from "@/components/PublishModal";
 import { ContactModal } from "@/components/ContactModal";
 import { IdentityModal, UserProfile } from "@/components/IdentityModal";
+import { MatchModal } from "@/components/MatchModal";
 import { AISynergyEngine } from "@/components/AISynergyEngine";
 import { ManifestoSection } from "@/components/ManifestoSection";
 import { Footer } from "@/components/Footer";
@@ -24,7 +25,12 @@ export default function Home() {
   const [isInviteOpen, setIsInviteOpen] = useState(false);
   const [isPublishOpen, setIsPublishOpen] = useState(false);
   const [isIdentityOpen, setIsIdentityOpen] = useState(false);
+  const [isMatchModalOpen, setIsMatchModalOpen] = useState(false);
+  const [matchModalProject, setMatchModalProject] = useState<ProjectItem | null>(null);
   const [inviteContext, setInviteContext] = useState<string | null>(null);
+
+  // Match system state
+  const [matchedProjectIds, setMatchedProjectIds] = useState<string[]>([]);
 
   // User identity state (teacher credentials)
   const [currentUser, setCurrentUser] = useState<UserProfile | null>(null);
@@ -73,7 +79,31 @@ export default function Home() {
       console.error(e);
     }
 
-    // 3. Detect invitation token (?invitacion=... or ?premio=...)
+    // 3. Load saved matches
+    try {
+      const savedMatches = localStorage.getItem("red_matched_projects");
+      if (savedMatches) {
+        setMatchedProjectIds(JSON.parse(savedMatches));
+      }
+    } catch (e) {
+      console.error(e);
+    }
+
+    // 4. Load community / teacher contributed projects
+    try {
+      const savedCommunity = localStorage.getItem("red_community_projects");
+      if (savedCommunity) {
+        const parsed: ProjectItem[] = JSON.parse(savedCommunity);
+        // Combine community projects with default flagship projects
+        const existingIds = new Set(REAL_PROJECTS_DATA.map(p => p.id));
+        const customFiltered = parsed.filter(p => !existingIds.has(p.id));
+        setProjects([...customFiltered, ...REAL_PROJECTS_DATA]);
+      }
+    } catch (e) {
+      console.error(e);
+    }
+
+    // 5. Detect invitation token (?invitacion=... or ?premio=...)
     if (typeof window !== "undefined") {
       const params = new URLSearchParams(window.location.search);
       const inviteToken = params.get("invitacion") || params.get("premio");
@@ -81,7 +111,6 @@ export default function Home() {
         setInviteContext(inviteToken);
         const savedProfile = localStorage.getItem("red_teacher_profile");
         if (!savedProfile) {
-          // Auto-prompt onboarding modal so the invited teacher can identify themselves
           setIsIdentityOpen(true);
         }
       }
@@ -128,8 +157,43 @@ export default function Home() {
     );
   };
 
+  // Toggle Match handler with celebration modal
+  const handleToggleMatch = (project: ProjectItem) => {
+    const alreadyMatched = matchedProjectIds.includes(project.id);
+    let updated: string[];
+    
+    if (alreadyMatched) {
+      updated = matchedProjectIds.filter((id) => id !== project.id);
+      setMatchedProjectIds(updated);
+    } else {
+      updated = [...matchedProjectIds, project.id];
+      setMatchedProjectIds(updated);
+      setMatchModalProject(project);
+      setIsMatchModalOpen(true);
+      // Increment local count
+      setProjects((prev) =>
+        prev.map((p) =>
+          p.id === project.id ? { ...p, matchesCount: (p.matchesCount || 0) + 1 } : p
+        )
+      );
+    }
+
+    try {
+      localStorage.setItem("red_matched_projects", JSON.stringify(updated));
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
   const handleAddProject = (newProject: ProjectItem) => {
     setProjects((prev) => [newProject, ...prev]);
+    try {
+      const savedCommunity = localStorage.getItem("red_community_projects");
+      const currentList: ProjectItem[] = savedCommunity ? JSON.parse(savedCommunity) : [];
+      localStorage.setItem("red_community_projects", JSON.stringify([newProject, ...currentList]));
+    } catch (e) {
+      console.error(e);
+    }
   };
 
   const handleOpenContactForProject = (project: ProjectItem) => {
@@ -177,6 +241,10 @@ export default function Home() {
         onOpenInvite={() => setIsInviteOpen(true)}
         onOpenPublish={() => setIsPublishOpen(true)}
         onOpenIdentity={() => setIsIdentityOpen(true)}
+        onOpenMatches={() => {
+          document.getElementById("proyectos-section")?.scrollIntoView({ behavior: "smooth" });
+        }}
+        matchedCount={matchedProjectIds.length}
         currentUser={currentUser}
         activeSection={activeSection}
         setActiveSection={handleNavigateSection}
@@ -190,15 +258,18 @@ export default function Home() {
         <Hero
           onExploreProjects={() => handleNavigateSection("proyectos")}
           onOpenAISynergy={() => handleNavigateSection("sinergias")}
+          onOpenPublish={() => setIsPublishOpen(true)}
         />
 
-        {/* Projects Explorer with ONLY the 2 requested projects */}
+        {/* Projects Explorer with ONLY "Más Vida, Menos Redes" + Community Added Topics */}
         <ProjectsExplorer
           projects={projects}
           onSelectProject={handleSelectProject}
           onReplicateProject={handleReplicateProject}
           onContactProject={handleOpenContactForProject}
           onOpenPublish={() => setIsPublishOpen(true)}
+          onToggleMatch={handleToggleMatch}
+          matchedProjectIds={matchedProjectIds}
         />
 
         {/* Hermanamientos & Sinergias Pedagógicas */}
@@ -217,12 +288,22 @@ export default function Home() {
         onClose={() => setSelectedProject(null)}
         onReplicate={handleReplicateProject}
         onContactAuthor={handleOpenContactForProject}
+        onToggleMatch={handleToggleMatch}
+        isMatched={selectedProject ? matchedProjectIds.includes(selectedProject.id) : false}
       />
 
       <ReplicateModal
         project={replicatingProject}
         onClose={() => setReplicatingProject(null)}
         onSuccess={handleReplicateSuccess}
+      />
+
+      <MatchModal
+        isOpen={isMatchModalOpen}
+        onClose={() => setIsMatchModalOpen(false)}
+        project={matchModalProject}
+        currentUser={currentUser}
+        onOpenIdentity={() => setIsIdentityOpen(true)}
       />
 
       <InviteModal

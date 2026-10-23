@@ -1,13 +1,15 @@
 "use client";
 
 import React from "react";
-import { Award, UserPlus, FilePlus, Sparkles, Sun, Moon, User, CheckCircle2 } from "lucide-react";
+import { Award, UserPlus, FilePlus, Sparkles, Sun, Moon, User, CheckCircle2, Heart } from "lucide-react";
 import { UserProfile } from "./IdentityModal";
 
 interface NavbarProps {
   onOpenInvite: () => void;
   onOpenPublish: () => void;
   onOpenIdentity: () => void;
+  onOpenMatches?: () => void;
+  matchedCount?: number;
   activeSection: string;
   setActiveSection: (section: string) => void;
   theme: "light" | "dark";
@@ -19,6 +21,8 @@ export const Navbar: React.FC<NavbarProps> = ({
   onOpenInvite,
   onOpenPublish,
   onOpenIdentity,
+  onOpenMatches,
+  matchedCount = 0,
   activeSection,
   setActiveSection,
   theme,
@@ -42,14 +46,14 @@ export const Navbar: React.FC<NavbarProps> = ({
             <div>
               <div className="flex items-center gap-2">
                 <span className="font-extrabold tracking-tight text-base sm:text-lg text-stone-950 dark:text-stone-50">
-                  Red Nacional de Innovación Docente
+                  Red de Innovación Docente
                 </span>
                 <span className="hidden sm:inline-block px-2.5 py-0.5 text-xs font-bold rounded-full bg-rose-100 dark:bg-rose-950/80 text-rose-950 dark:text-rose-200 border border-rose-200 dark:border-rose-800">
                   red.magicsteam.org
                 </span>
               </div>
               <p className="text-xs text-stone-600 dark:text-stone-400 hidden sm:block">
-                Ecosistema de proyectos replicables · National Teacher Prize
+                Ecosistema abierto de proyectos de aula replicables y hermanamiento entre centros
               </p>
             </div>
           </div>
@@ -64,7 +68,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                   : "text-stone-700 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-900 hover:text-stone-950 dark:hover:text-white"
               }`}
             >
-              Proyectos Replicables
+              Proyectos y Temas
             </button>
 
             <button
@@ -91,9 +95,24 @@ export const Navbar: React.FC<NavbarProps> = ({
             </button>
           </nav>
 
-          {/* Action Buttons, Identity & Theme Toggle */}
+          {/* Action Buttons, Matches, Identity & Theme Toggle */}
           <div className="flex items-center gap-2 shrink-0">
             
+            {/* Mis Matches Shortcut Pill */}
+            {matchedCount > 0 && onOpenMatches && (
+              <button
+                onClick={onOpenMatches}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold bg-rose-50 dark:bg-rose-950/80 text-rose-950 dark:text-rose-200 border border-rose-200 dark:border-rose-800 shadow-xs cursor-pointer hover:bg-rose-100 transition-colors"
+                title="Ver mis proyectos con Match"
+              >
+                <Heart className="w-3.5 h-3.5 fill-rose-600 text-rose-600" />
+                <span>Mis Matches</span>
+                <span className="w-4 h-4 rounded-full bg-rose-900 text-white text-[10px] flex items-center justify-center font-mono">
+                  {matchedCount}
+                </span>
+              </button>
+            )}
+
             {/* User Identity Pill / Login */}
             {currentUser ? (
               <button
@@ -102,17 +121,17 @@ export const Navbar: React.FC<NavbarProps> = ({
                 title="Editar mi perfil docente"
               >
                 <Award className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
-                <span className="truncate max-w-[120px] sm:max-w-[160px]">{currentUser.name}</span>
+                <span className="truncate max-w-[110px] sm:max-w-[150px]">{currentUser.name}</span>
                 <span className="hidden md:inline-flex items-center gap-0.5 text-[10px] font-extrabold text-emerald-800 bg-emerald-100 dark:bg-emerald-950 px-1.5 py-0.5 rounded-full border border-emerald-300 dark:border-emerald-700">
                   <CheckCircle2 className="w-2.5 h-2.5" />
-                  Verificado
+                  Docente
                 </span>
               </button>
             ) : (
               <button
                 onClick={onOpenIdentity}
                 className="hidden sm:inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-semibold text-stone-700 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-900 border border-stone-300 dark:border-stone-700 cursor-pointer"
-                title="Identifícate como docente premiado"
+                title="Identifícate con tu nombre y centro"
               >
                 <User className="w-3.5 h-3.5 text-rose-900 dark:text-rose-400" />
                 <span>Identificarme</span>
@@ -130,12 +149,12 @@ export const Navbar: React.FC<NavbarProps> = ({
               {theme === "dark" ? (
                 <>
                   <Sun className="w-3.5 h-3.5 text-amber-400" />
-                  <span className="hidden sm:inline">Modo Día</span>
+                  <span className="hidden sm:inline">Día</span>
                 </>
               ) : (
                 <>
                   <Moon className="w-3.5 h-3.5 text-stone-700" />
-                  <span className="hidden sm:inline">Modo Noche</span>
+                  <span className="hidden sm:inline">Noche</span>
                 </>
               )}
             </button>
@@ -144,20 +163,20 @@ export const Navbar: React.FC<NavbarProps> = ({
             <button
               onClick={onOpenInvite}
               className="hidden sm:inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full text-xs font-bold bg-stone-100 dark:bg-stone-900 hover:bg-stone-200 dark:hover:bg-stone-800 text-stone-800 dark:text-stone-200 border border-stone-300 dark:border-stone-700 transition-all cursor-pointer shadow-xs active:scale-95"
-              title="Invitar a otro docente del certamen"
+              title="Invitar a otros compañeros docentes"
             >
               <UserPlus className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
               <span>Invitar</span>
             </button>
 
-            {/* Publish button */}
+            {/* Aportar Proyecto button */}
             <button
               onClick={onOpenPublish}
               className="inline-flex items-center gap-1.5 px-3.5 sm:px-4 py-2 rounded-full text-xs sm:text-sm font-bold bg-rose-950 hover:bg-rose-900 dark:bg-rose-900 dark:hover:bg-rose-800 text-white shadow-xs active:scale-95 transition-all cursor-pointer"
             >
               <FilePlus className="w-4 h-4" />
-              <span className="hidden sm:inline">Publicar Proyecto</span>
-              <span className="sm:hidden">Publicar</span>
+              <span className="hidden sm:inline">Aportar Proyecto</span>
+              <span className="sm:hidden">Aportar</span>
             </button>
           </div>
 

@@ -58,10 +58,10 @@ export const AISynergyEngine: React.FC<AISynergyEngineProps> = ({ onContactAutho
       } else {
         setGeneratedSynergy({
           recommendedProject: "Más Vida, Menos Redes (Reto de desconexión digital voluntaria)",
-          mentorTeacher: "Ricardo Aguado (Colegio Juan de Lanuza · National Teacher Prize)",
-          compatibility: 97,
-          adaptationPlan: "Replicar el reto de 1 semana sin smartphone sustituyéndolos por móviles de teclas. Iniciar con 2 semanas de debate sobre tiempo de pantalla en tutoría y sumar a las familias mediante el pacto voluntario.",
-          suggestedEmail: "Estimado Ricardo, hemos descubierto el playbook de 'Más Vida, Menos Redes' en la Red Nacional de Innovación Docente y queremos implementarlo este trimestre en Secundaria. ¿Podrías facilitarnos el modelo de carta a las familias y las orientaciones para contactar con una operadora local?"
+          mentorTeacher: "Ricardo Aguado, Alba Tardío, Lise Baiget y Juan Carlos Soler (Colegio Juan de Lanuza)",
+          compatibility: 98,
+          adaptationPlan: "Replicar el reto de 1 semana sin smartphone sustituyéndolos por móviles básicos de teclas (con el apoyo del Colegio Juan de Lanuza, IES Ramón Pignatelli e IES Valdespartera). Iniciar con 2 semanas de debate sobre tiempo de pantalla en tutorías y sumar a las familias mediante el pacto voluntario.",
+          suggestedEmail: "Hola Ricardo y equipo de Más Vida, Menos Redes: hemos descubierto vuestro proyecto en la Red de Innovación Docente y queremos plantear una réplica en nuestro centro. ¿Podríais facilitarnos los instrumentos validados por la Asociación Aragonesa de Psicopedagogía y orientarnos sobre la alianza con operadoras locales para los terminales de teclas?"
         });
       }
     }, 700);

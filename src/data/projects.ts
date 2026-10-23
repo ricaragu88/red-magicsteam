@@ -25,23 +25,28 @@ export interface ProjectItem {
     text: string;
     border: string;
   };
-  award: string;
+  recognition?: string;
   author: {
     name: string;
     role: string;
     school: string;
     location: string;
     avatar: string;
-    teacherPrizeEdition?: string;
     email?: string;
+    coAuthors?: string[];
   };
+  collaboratingSchools?: string[];
+  scientificValidation?: string;
+  partnerEntities?: string[];
   image: string;
   videoUrl?: string;
   replicabilityScore: number;
   replicationsCount: number;
+  matchesCount: number;
   studentsImpacted: number;
   summary: string;
   pedagogicalObjective: string;
+  pedagogicalConcept?: string; // Ej: "Innovación por sustracción"
   replicability: ReplicabilityFactor;
   stepByStep: {
     phase: string;
@@ -52,184 +57,204 @@ export interface ProjectItem {
   impactResults: string[];
   downloads: ProjectDownload[];
   tags: string[];
+  isFlagship?: boolean;
 }
 
+export const THEMATIC_CATEGORIES = [
+  { id: "all", name: "Todos los proyectos" },
+  { id: "Bienestar Digital & Convivencia", name: "Bienestar Digital & Convivencia" },
+  { id: "Tecnología, STEAM & Robótica", name: "Tecnología, STEAM & Robótica" },
+  { id: "Ciencias, Salud & Sostenibilidad", name: "Ciencias, Salud & Sostenibilidad" },
+  { id: "Creatividad, Lengua & Arte", name: "Creatividad, Lengua & Arte" },
+  { id: "Inclusión, ApS & Comunidad", name: "Inclusión, ApS & Comunidad" },
+];
+
+export const SUGGESTED_TOPIC_TAGS: Record<string, string[]> = {
+  "Bienestar Digital & Convivencia": [
+    "Desconexión Digital",
+    "Salud Mental",
+    "Uso de Móviles",
+    "Tiempo de Pantalla",
+    "Pacto con Familias",
+    "Prevención Ciberacoso",
+    "Autorregulación",
+    "Descanso y Sueño"
+  ],
+  "Tecnología, STEAM & Robótica": [
+    "Programación",
+    "Robótica Educativa",
+    "Microcontroladores ESP32",
+    "Mundo Maker",
+    "Software Libre",
+    "Pensamiento Computacional",
+    "Impresión 3D",
+    "Inteligencia Artificial"
+  ],
+  "Ciencias, Salud & Sostenibilidad": [
+    "Ciencia Ciudadana",
+    "Calidad del Aire y CO2",
+    "Huerto Escolar",
+    "Sostenibilidad",
+    "Economía Circular",
+    "Biodiversidad",
+    "Alimentación Saludable"
+  ],
+  "Creatividad, Lengua & Arte": [
+    "Radio Escolar",
+    "Escritura Creativa",
+    "Podcast de Aula",
+    "Dramatización",
+    "Comunicación y Oratoria",
+    "Stop-Motion",
+    "Música y Sonido"
+  ],
+  "Inclusión, ApS & Comunidad": [
+    "Aprendizaje-Servicio (ApS)",
+    "ApS Hospitalario",
+    "Acompañamiento a Mayores",
+    "Mentoría entre Iguales",
+    "Accesibilidad",
+    "Diversidad Funcional",
+    "Solidaridad Vecinal"
+  ]
+};
+
+// ÚNICO PROYECTO EJEMPLO OFICIAL: "Más Vida, Menos Redes"
+// Documentado exhaustivamente con el artículo de la Revista ENLACE 36 de la Asociación Aragonesa de Psicopedagogía (AAP)
 export const REAL_PROJECTS_DATA: ProjectItem[] = [
   {
     id: "mas-vida-menos-redes",
     title: "Más Vida, Menos Redes",
-    subtitle: "Reto pionero de desconexión digital voluntaria, salud mental y pedagogía del tiempo",
+    subtitle: "Reto pionero de desconexión digital voluntaria, salud mental e innovación por sustracción en las aulas",
     category: "Bienestar Digital & Convivencia",
     categoryTheme: {
       bg: "bg-rose-50 dark:bg-rose-950/70",
       text: "text-rose-900 dark:text-rose-200",
       border: "border-rose-200 dark:border-rose-800"
     },
-    award: "Finalista Top 3 Nacional Premios Mentes AMI 2026 (Atresmedia / Mutua)",
+    recognition: "Top 3 Nacional Premios Mentes AMI 2026 (Atresmedia / Mutua) · 35 Mejores Experiencias SIMO Educación 2025",
     author: {
       name: "Ricardo Aguado",
       role: "Docente de Tecnología y Coordinador de Innovación",
       school: "Colegio Juan de Lanuza",
       location: "Zaragoza, Aragón",
       avatar: "/images/docenteRicardo-aguado-1.jpg",
-      teacherPrizeEdition: "National Teacher Prize 2026",
-      email: "info@tecnodivergente.es"
+      email: "info@tecnodivergente.es",
+      coAuthors: [
+        "Alba Tardío (Profesora Colegio Juan de Lanuza)",
+        "Lise Baiget (Profesora Colegio Juan de Lanuza)",
+        "Juan Carlos Soler (Profesor Colegio Juan de Lanuza)"
+      ]
     },
+    collaboratingSchools: [
+      "Colegio Juan de Lanuza (Centro Impulsor)",
+      "IES Ramón Pignatelli (Zaragoza · Centro Público Colaborador)",
+      "IES Valdespartera (Zaragoza · Centro Público Colaborador)"
+    ],
+    scientificValidation: "Asociación Aragonesa de Psicopedagogía (AAP) · Publicación en Revista ENLACE Nº 36 (sep. 2026, pp. 66-68)",
+    partnerEntities: [
+      "Embou (Operadora de telecomunicaciones · Cesión de terminales básicos de teclas)",
+      "Asociación Aragonesa de Psicopedagogía (Asesoramiento psicopedagógico y diseño de instrumentos)"
+    ],
+    pedagogicalConcept: "Innovación por sustracción: en lugar de incorporar una nueva herramienta tecnológica al aula, se genera una pausa deliberada para observar qué cambia cuando desaparecen los estímulos continuos.",
     image: "/images/masvidamenosredes.jpg",
     videoUrl: "https://www.youtube.com/watch?v=pd3_mC_vYn4",
-    replicabilityScore: 88,
+    replicabilityScore: 92,
     replicationsCount: 8,
+    matchesCount: 16,
     studentsImpacted: 840,
-    summary: "Durante una semana completa, el alumnado sustituye voluntariamente sus smartphones por terminales básicos de teclas (cedidos por una operadora local de telecomunicaciones), prescindiendo totalmente de redes sociales, mensajería instantánea y notificaciones invasivas. Mediante Aprendizaje-Servicio (ApS), los alumnos mayores mentorizan a los de últimos cursos de primaria y a sus familias para prevenir la entrega prematura del primer smartphone.",
-    pedagogicalObjective: "Recuperar la soberanía del tiempo y la atención, mitigar la ansiedad digital en adolescentes y generar un pacto comunitario centro-familias basado en la evidencia empírica.",
+    isFlagship: true,
+    summary: "Durante una semana completa, el alumnado sustituye voluntariamente sus smartphones por terminales básicos de teclas (facilitados por la operadora aragonesa Embou), eliminando notificaciones, redes sociales y vídeos compulsivos mientras preserva la comunicación esencial con las familias. Mediante Aprendizaje-Servicio (ApS), los estudiantes que viven el reto se convierten en mentores de alumnos de Primaria y de sus familias. El modelo está científicamente documentado por la Asociación Aragonesa de Psicopedagogía y transferido con éxito a centros públicos (IES Ramón Pignatelli e IES Valdespartera).",
+    pedagogicalObjective: "Recuperar la soberanía del tiempo y la atención, mitigar la ansiedad digital en adolescentes, mejorar el descanso y la concentración, y crear una cultura comunitaria de bienestar digital sostenida entre centro y hogar.",
     replicability: {
       difficulty: "Media",
-      estimatedBudget: "0 € (con cesión de terminales básicos o préstamo familiar)",
-      targetStages: ["5º-6º Primaria (Mentorizados)", "1º-4º ESO (Reto central)", "Bachillerato"],
-      duration: "3 semanas de preparación + 1 semana intensiva de reto",
+      estimatedBudget: "0 € (con cesión de terminales básicos por operadora local o campaña de recogida familiar)",
+      targetStages: ["5º-6º Primaria (Mentorizados ApS)", "1º a 4º ESO (Reto central)", "Bachillerato"],
+      duration: "3 semanas de preparación y sensibilización + 1 semana intensiva de reto",
       externalRequirements: [
-        "Contacto y acuerdo con operadora local de telecomunicaciones (ej. EMBOU o similar) o campaña de recogida de terminales de teclas antiguos de las familias.",
-        "Complicidad y firma voluntaria del pacto de acompañamiento por parte de las familias en el hogar.",
-        "Coordinación con el ayuntamiento o servicios de salud comunitaria/adicciones (opcional pero muy enriquecedor)."
+        "Alianza con una operadora de telecomunicaciones local (ej. Embou) o recogida voluntaria de móviles de teclas en desuso de las familias.",
+        "Asamblea informativa de familias y firma del pacto voluntario de acompañamiento en el hogar.",
+        "Coordinación intercentros (opcional pero muy recomendada, como la red entre Juan de Lanuza, IES Ramón Pignatelli e IES Valdespartera)."
       ],
       classroomPrep: [
-        "2 semanas de debates y análisis de métricas de 'tiempo de pantalla' en tutorías.",
-        "Talleres de sensibilización impartidos por los alumnos mayores a los de primaria.",
-        "Diseño de diarios de abordo y registros de emociones para la semana sin smartphone.",
-        "Gestión de duplicados de tarjetas SIM o adaptación a formato estándar para los móviles de teclas."
+        "Fase de reflexión: cuestionarios iniciales de diagnóstico sobre dependencia digital, fatiga de sueño y uso nocturno.",
+        "Talleres de neurociencia de la adicción, dopamina, FOMO y afectación en la autoestima por comparación en redes sociales.",
+        "Reparto de los diarios de abordo y formularios de seguimiento de descanso, concentración y estado de ánimo.",
+        "Dinamización de recreos y descansos con alternativas activas sin pantalla (juegos gigantes, torneos, música, lectura)."
       ],
       successKeys: [
-        "Carácter 100% voluntario: nunca plantearlo como un castigo, sino como un experimento y desafío personal.",
-        "Involucrar activamente a las familias: que los padres también reduzcan su consumo de pantallas en casa durante esa semana.",
-        "Dinamizar los recreos con alternativas atractivas de ocio no digital (juegos de mesa gigantes, torneos deportivos, música, lectura)."
+        "Carácter 100% voluntario: nunca plantearlo como imposición o castigo, sino como un laboratorio personal y reto compartido.",
+        "Coherencia centro-hogar: que las familias también revisen sus propios hábitos frente a las pantallas esa semana.",
+        "Aprender sirviendo (ApS): convertir al alumnado en mentor de Primaria le otorga protagonismo y refuerza su autorregulación sin moralinas adultocéntricas.",
+        "Uso de instrumentos rigurosos de medición pre y post reto (facilitados por la Asociación Aragonesa de Psicopedagogía)."
       ]
     },
     stepByStep: [
       {
-        phase: "Fase 1",
-        title: "Sensibilización y Pacto de Aula",
-        description: "Auditoría de pantalla en tutorías. Debate sobre dopamina, FOMO y calidad del descanso. Presentación voluntaria del reto.",
+        phase: "Fase 1: Reflexión y Diagnóstico",
+        title: "Sensibilización y Análisis de Hábitos",
+        description: "Cuestionarios de partida (80% dependencia digital detectada, 30% uso nocturno). Sesiones en tutorías sobre neurociencia de la atención, autoestima y límites digitales. Asamblea de familias y firma del pacto voluntario.",
         duration: "Semanas 1 y 2"
       },
       {
-        phase: "Fase 2",
-        title: "Alianza Logística y Acuerdo de Familias",
-        description: "Asamblea de familias. Firma del pacto de acompañamiento. Adquisición o cesión de terminales básicos de teclas.",
-        duration: "Semana 3"
+        phase: "Fase 2: Experiencia (El Reto)",
+        title: "7 Días de Desconexión con Móviles de Teclas",
+        description: "Sustitución voluntaria del smartphone por terminales básicos Embou. Registro diario de sueño, concentración y relaciones personales. Espacios de diálogo para compartir sensaciones y recreos dinámicos.",
+        duration: "Semana 3 (7 días completos)"
       },
       {
-        phase: "Fase 3",
-        title: "Semana del Reto (Desconexión Real)",
-        description: "Entrega de smartphones bajo custodia y activación de teléfonos de teclas. Diario de emociones, recreos activos y mentoría ApS a primaria.",
-        duration: "Semana 4 (7 días)"
+        phase: "Fase 3: Transferencia (ApS)",
+        title: "El Alumnado como Mentor y Agente de Cambio",
+        description: "Mediante Aprendizaje-Servicio, los estudiantes diseñan charlas, talleres y materiales para Primaria y familias, transmitiendo lo aprendido desde su propia experiencia real.",
+        duration: "Semana 4 en adelante"
       },
       {
-        phase: "Fase 4",
-        title: "Evaluación de Impacto y Conclusiones",
-        description: "Recopilación de encuestas de bienestar, análisis estadístico con el alumnado, asamblea comunitaria y difusión en medios locales.",
-        duration: "Semana posterior"
+        phase: "Fase 4: Evaluación Científica",
+        title: "Medición de Impacto y Validación con la AAP",
+        description: "Análisis comparativo de cuestionarios con la Asociación Aragonesa de Psicopedagogía: 83% de finalización con éxito, más del 70% de mejora en descanso y concentración, y mayor presencia en el aula.",
+        duration: "Evaluación continua"
       }
     ],
     impactResults: [
-      "92 % de participación voluntaria en el centro y 83 % de éxito en la finalización íntegra del reto.",
-      "70 % de mejora medible en calidad del sueño, capacidad de concentración y reducción de ansiedad.",
-      "Extensión del programa a centros educativos a través del CMAPA del Ayuntamiento de Zaragoza.",
-      "Publicación científica en la revista ENLACE (Asociación Aragonesa de Psicopedagogía, sep. 2026)."
+      "83% del alumnado completó con éxito el reto de 7 días íntegros sin usar smartphones.",
+      "Más del 70% percibió un mejor descanso, mayor concentración en el estudio y bienestar relativo a la tranquilidad.",
+      "Recuperación observable de la conversación cara a cara, ocio compartido en recreos y comunicación en el hogar.",
+      "Transferencia contrastada entre centros de distinta titularidad: Colegio Juan de Lanuza (privado), IES Ramón Pignatelli (público) e IES Valdespartera (público).",
+      "Publicación científica en la Revista ENLACE de la Asociación Aragonesa de Psicopedagogía (Nº 36, sep. 2026).",
+      "Reconocimiento nacional en SIMO Educación 2025 y finalista en Premios Mentes AMI 2026."
     ],
     downloads: [
-      { title: "Artículo Científico Revista ENLACE AAP (PDF Oficial)", type: "PDF", size: "366 KB", url: "/recursos/enlace-aap-sep2026.pdf" },
-      { title: "Plantilla de Pacto y Consentimiento para Familias", type: "Plantilla", size: "180 KB" },
-      { title: "Diario de Abordo y Registro de Emociones para Alumnado", type: "Rúbrica", size: "420 KB" },
-      { title: "Dossier de Presentación para Operadoras Locales / Patrocinadores", type: "Plantilla", size: "650 KB" }
-    ],
-    tags: ["Bienestar Digital", "Salud Mental", "ApS", "Familias", "Comunidad", "Zaragoza"]
-  },
-  {
-    id: "cuentos-en-el-aire",
-    title: "Cuentos en el Aire",
-    subtitle: "Walkie-talkies digitales y relatos interactivos para acompañar a niños hospitalizados",
-    category: "Inclusión Social & ApS Hospitalario",
-    categoryTheme: {
-      bg: "bg-emerald-50 dark:bg-emerald-950/70",
-      text: "text-emerald-900 dark:text-emerald-200",
-      border: "border-emerald-200 dark:border-emerald-850"
-    },
-    award: "Iniciativa ApS Destacada con Cobertura Sanitaria y en Medios",
-    author: {
-      name: "Ricardo Aguado",
-      role: "Docente de Tecnología y Coordinador STEAM",
-      school: "Colegio Juan de Lanuza",
-      location: "Zaragoza, Aragón",
-      avatar: "/images/docenteRicardo-aguado-1.jpg",
-      teacherPrizeEdition: "National Teacher Prize 2026",
-      email: "info@tecnodivergente.es"
-    },
-    image: "/images/WhatsApp-Image-2026-04-05-at-09.25.41.jpeg",
-    videoUrl: "https://www.youtube.com/watch?v=_f9OhferiS8",
-    replicabilityScore: 92,
-    replicationsCount: 5,
-    studentsImpacted: 410,
-    summary: "Los estudiantes programan transmisores de audio digital ('walkie-talkies' educativos con microcontroladores ESP32) y escriben relatos dramatizados e interactivos. A través de ellos, emiten en directo para pacientes infantiles ingresados en el Hospital Infantil Miguel Servet de Zaragoza, transformando las habitaciones de hospital en espacios de fantasía y acompañamiento cálido.",
-    pedagogicalObjective: "Vincular el aprendizaje de la expresión oral, la escritura creativa y la programación física con el alivio emocional de niños en situación hospitalaria prolongada.",
-    replicability: {
-      difficulty: "Baja",
-      estimatedBudget: "50 € - 120 € (módulos ESP32 o walkies educativos abiertos)",
-      targetStages: ["3º a 6º Primaria", "1º a 3º ESO"],
-      duration: "4 a 6 semanas (1 sesión semanal interdisciplinar)",
-      externalRequirements: [
-        "Contacto previo con el aula hospitalaria o equipo de atención psicopedagógica del hospital pediátrico de referencia.",
-        "Protocolo de confidencialidad y autorización de protección de datos de los menores ingresados.",
-        "Espacio de emisión tranquilo en el centro (aula de radio o rincón insonorizado básico)."
-      ],
-      classroomPrep: [
-        "Taller de redacción de cuentos interactivos con bifurcaciones de decisión ('elige tu propia aventura').",
-        "Ensayos de locución, modulación de voz y efectos sonoros artesanales.",
-        "Configuración básica de transmisión segura de audio vía radiofrecuencia o streaming privado."
-      ],
-      successKeys: [
-        "Diseñar historias donde el niño hospitalizado pueda tomar decisiones en la trama por el canal de respuesta.",
-        "Coordinar con el personal de enfermería y aula hospitalaria los horarios de medicación y descanso.",
-        "Trabajar en el aula ordinaria la empatía y la madurez emocional frente a la enfermedad."
-      ]
-    },
-    stepByStep: [
       {
-        phase: "Fase 1",
-        title: "Alianza con el Aula Hospitalaria",
-        description: "Reunión con los maestros del hospital pediátrico para acordar edades de los pacientes, horarios y protocolos de conexión.",
-        duration: "Semana 1"
+        title: "Artículo Completo Revista ENLACE 36 - AAP (PDF Oficial)",
+        type: "PDF",
+        size: "366 KB",
+        url: "/recursos/enlace-aap-sep2026.pdf"
       },
       {
-        phase: "Fase 2",
-        title: "Guiones y Efectos Sonoros (Lengua)",
-        description: "En clase de Lengua: creación de cuentos participativos, selección musical libre de derechos y diseño de efectos sonoros.",
-        duration: "Semanas 2 y 3"
+        title: "Plantilla del Pacto y Compromiso para Familias",
+        type: "Plantilla",
+        size: "180 KB"
       },
       {
-        phase: "Fase 3",
-        title: "Programación y Puesta a Punto (Tecnología)",
-        description: "Configuración de los transmisores con ESP32, comprobación de cobertura de audio y ensayos de emisión sin latencia.",
-        duration: "Semana 4"
+        title: "Diario de Abordo y Registro de Emociones para Alumnado",
+        type: "Rúbrica",
+        size: "420 KB"
       },
       {
-        phase: "Fase 4",
-        title: "Emisiones en Directo y Evaluación",
-        description: "Lectura interactiva en directo y recepción del feedback emocional de los pequeños hospitalizados y sus familias.",
-        duration: "Semanas 5 y 6"
+        title: "Guía de Alianza y Solicitud para Operadoras de Telecomunicaciones",
+        type: "Guía",
+        size: "520 KB"
       }
     ],
-    impactResults: [
-      "Decenas de sesiones de acompañamiento emitidas a niños ingresados en el Miguel Servet.",
-      "Incremento contrastado en la autoestima y fluidez lectora en los estudiantes emisores.",
-      "Reportaje en profundidad en El Periódico de Aragón: 'Cuando aprender también es ayudar'.",
-      "Extensión del modelo a centros de mayores del distrito."
-    ],
-    downloads: [
-      { title: "Plantilla de Guiones Radiofónicos Interactivos", type: "Plantilla", size: "320 KB" },
-      { title: "Manual de Programación de Audio ESP32 en Scratch/Arduino", type: "Código", size: "1.1 MB" },
-      { title: "Protocolo Guía de Coordinación con Aulas Hospitalarias", type: "Guía", size: "450 KB" }
-    ],
-    tags: ["ApS Hospitalario", "Radio Escolar", "Lengua", "Inclusión", "Bajo Coste", "Salud Infantil"]
+    tags: [
+      "Bienestar Digital",
+      "Salud Mental",
+      "ApS",
+      "Innovación por Sustracción",
+      "Familias",
+      "Psicopedagogía",
+      "Zaragoza"
+    ]
   }
 ];
 
@@ -248,32 +273,17 @@ export interface SynergyMatch {
 export const REAL_SYNERGIES: SynergyMatch[] = [
   {
     id: "syn-1",
-    sourceProject: "Cuentos en el Aire",
-    sourceTeacher: "Ricardo Aguado (Colegio Juan de Lanuza)",
-    targetCategory: "Lengua, Literatura & Radio Escolar",
-    targetNeed: "Colegios e Institutos con proyecto de radio escolar o escritura creativa",
-    matchScore: 96,
-    pedagogicalSynergy: "Hermanamiento Sonoro con Aulas Hospitalarias: Cualquier centro con radio escolar o taller literario puede grabar sus cuentos o radionovelas y emitirlos a través de la red hacia las áreas pediátricas del Hospital Infantil Miguel Servet o sus hospitales provinciales más cercanos.",
-    actionPact: "Grabación conjunta de capítulos cruzados entre alumnos de ambos centros y emisión coordinada con las maestras de hospital.",
-    benefits: [
-      "Aprendizaje-Servicio real: los alumnos escriben con un propósito humano conmovedor.",
-      "Conexión intercentros directa sin necesidad de desplazamientos físicos.",
-      "Materialización práctica del currículo de expresión oral y escrita."
-    ]
-  },
-  {
-    id: "syn-2",
     sourceProject: "Más Vida, Menos Redes",
-    sourceTeacher: "Ricardo Aguado (Colegio Juan de Lanuza)",
-    targetCategory: "Convivencia & Bienestar Digital",
-    targetNeed: "Institutos y Colegios con problemas de adicción a pantallas y dispersión en el aula",
-    matchScore: 94,
-    pedagogicalSynergy: "Réplica Simultánea y Comparativa Científica: Los centros replican el reto durante la misma semana (ej. Semana de la Salud Mental o Día de Internet Seguro). Comparten datos anonimizados para multiplicar la muestra y publicar conclusiones conjuntas con impacto mediático.",
-    actionPact: "Pacto de claustro interprovincial y negociación unificada para la cesión de terminales básicos con operadoras locales.",
+    sourceTeacher: "Ricardo Aguado, Alba Tardío, Lise Baiget y Juan Carlos Soler (Colegio Juan de Lanuza)",
+    targetCategory: "Convivencia, Tutoría & Bienestar Digital",
+    targetNeed: "Colegios e Institutos que deseen realizar el reto de desconexión simultáneo o mentoría ApS",
+    matchScore: 98,
+    pedagogicalSynergy: "Hermanamiento para Réplica Simultánea y Comparativa de Evidencias: Vuestro centro y los centros impulsores (Juan de Lanuza, IES Ramón Pignatelli e IES Valdespartera) pueden coordinar la semana sin smartphone en las mismas fechas (ej. Día de Internet Seguro o Semana de la Salud Mental), compartiendo datos de bienestar y diarios de aula.",
+    actionPact: "Pacto de colaboración intercentros: intercambio de cuestionarios validados por la Asociación Aragonesa de Psicopedagogía y sesión conjunta online entre alumnos mentores de ambos colegios.",
     benefits: [
-      "Mayor fuerza ante instituciones públicas y operadoras de telecomunicaciones.",
-      "Reducción demostrada del ciberacoso y mejora drástica en el clima de convivencia escolar.",
-      "Sensibilización masiva de familias con el respaldo de la Red Nacional."
+      "Apoyo y orientación directa del equipo docente que ya ha vivido y testado el proyecto.",
+      "Validación de datos agregados para presentar ante AMPAs, claustros e instituciones locales.",
+      "Acceso directo a las guías de contacto con operadoras locales para la cesión de móviles de teclas."
     ]
   }
 ];
