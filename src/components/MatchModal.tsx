@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { X, Sparkles, Heart, School, Send, MessageCircle, Copy, Check, ArrowRight, Users, BookOpen } from "lucide-react";
+import { X, Sparkles, Heart, School, Send, MessageCircle, Copy, Check, ArrowRight, Users, BookOpen, Mail } from "lucide-react";
 import { ProjectItem } from "@/data/projects";
 
 interface MatchModalProps {
@@ -24,6 +24,7 @@ export const MatchModal: React.FC<MatchModalProps> = ({
   onOpenIdentity,
 }) => {
   const [copied, setCopied] = useState(false);
+  const [copiedAuthorEmail, setCopiedAuthorEmail] = useState(false);
 
   if (!isOpen || !project) return null;
 
@@ -141,6 +142,45 @@ ${senderSchool}`;
                 <span><strong>Evidencias compartidas:</strong> Sumar los datos de vuestro colegio a la investigación de la Asociación Aragonesa de Psicopedagogía.</span>
               </li>
             </ul>
+          </div>
+
+          {/* Direct Author Contact Box */}
+          <div className="p-4 rounded-2xl bg-stone-50 dark:bg-stone-950 border border-stone-200 dark:border-stone-800 space-y-2">
+            <span className="text-[11px] font-extrabold uppercase tracking-wider text-rose-900 dark:text-rose-400 block">
+              Correo de Contacto Directo del Autor:
+            </span>
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white dark:bg-stone-900 p-3 rounded-xl border border-stone-200 dark:border-stone-800">
+              <div className="flex items-center gap-2 min-w-0">
+                <Mail className="w-4 h-4 text-rose-700 shrink-0" />
+                <span className="font-mono text-xs sm:text-sm font-bold text-stone-900 dark:text-stone-100 truncate">
+                  {project.author.email || "info@tecnodivergente.es"}
+                </span>
+              </div>
+              <div className="flex items-center gap-2 shrink-0">
+                <button
+                  type="button"
+                  onClick={() => {
+                    navigator.clipboard.writeText(project.author.email || "info@tecnodivergente.es");
+                    setCopiedAuthorEmail(true);
+                    setTimeout(() => setCopiedAuthorEmail(false), 2000);
+                  }}
+                  className="px-3 py-1.5 rounded-full bg-stone-100 hover:bg-stone-200 dark:bg-stone-800 dark:hover:bg-stone-700 text-stone-800 dark:text-stone-200 font-bold text-xs flex items-center gap-1.5 transition-colors cursor-pointer"
+                >
+                  {copiedAuthorEmail ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
+                  <span>{copiedAuthorEmail ? "¡Copiado!" : "Copiar Correo"}</span>
+                </button>
+                <a
+                  href={`mailto:${project.author.email || "info@tecnodivergente.es"}`}
+                  className="px-3 py-1.5 rounded-full bg-rose-50 hover:bg-rose-100 dark:bg-rose-950/60 dark:hover:bg-rose-900 text-rose-900 dark:text-rose-200 font-bold text-xs flex items-center gap-1.5 transition-colors"
+                >
+                  <Mail className="w-3.5 h-3.5" />
+                  <span>Escribir</span>
+                </a>
+              </div>
+            </div>
+            <p className="text-[11px] text-stone-500 leading-snug">
+              Puedes copiar la dirección para escribirle desde tu correo corporativo (ej. Educa Aragón, Madrid, etc.) o usar los botones de abajo.
+            </p>
           </div>
 
           {/* Proposal Message Preview */}

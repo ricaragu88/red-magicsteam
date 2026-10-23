@@ -45,6 +45,7 @@ export const ContactModal: React.FC<ContactModalProps> = ({
   }, [initialMessage, targetAuthorName, targetProjectTitle, currentUser]);
 
   const [copied, setCopied] = useState(false);
+  const [copiedEmail, setCopiedEmail] = useState(false);
 
   if (!isOpen) return null;
 
@@ -92,16 +93,40 @@ export const ContactModal: React.FC<ContactModalProps> = ({
         <div className="p-6 sm:p-8 space-y-6">
           
           {/* Target recipient info */}
-          <div className="bg-stone-50 dark:bg-stone-950 p-4 rounded-2xl border border-stone-200 dark:border-stone-800 space-y-1">
+          <div className="bg-stone-50 dark:bg-stone-950 p-4 rounded-2xl border border-stone-200 dark:border-stone-800 space-y-2">
             <span className="text-[11px] font-bold text-rose-950 dark:text-rose-400 uppercase tracking-wider">
-              Destinatario:
+              Destinatario y Contacto Directo:
             </span>
-            <h4 className="text-base font-extrabold text-stone-950 dark:text-white">
-              {targetAuthorName} ({targetSchool})
-            </h4>
-            <p className="text-xs text-stone-600 dark:text-stone-400">
-              Proyecto de referencia: <strong className="text-stone-900 dark:text-stone-200">{targetProjectTitle}</strong> · Email: <span className="font-mono text-stone-700 dark:text-stone-300">{targetAuthorEmail || "info@tecnodivergente.es"}</span>
-            </p>
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+              <div>
+                <h4 className="text-base font-extrabold text-stone-950 dark:text-white">
+                  {targetAuthorName}
+                </h4>
+                <p className="text-xs text-stone-600 dark:text-stone-400">
+                  {targetSchool} · Proyecto: <strong className="text-stone-900 dark:text-stone-200">{targetProjectTitle}</strong>
+                </p>
+              </div>
+
+              {/* Direct email pill with 1-click copy */}
+              <div className="flex items-center gap-2 bg-white dark:bg-stone-900 px-3 py-1.5 rounded-xl border border-stone-300 dark:border-stone-700 shadow-xs self-start sm:self-auto">
+                <Mail className="w-3.5 h-3.5 text-rose-700 shrink-0" />
+                <span className="font-mono text-xs font-bold text-rose-950 dark:text-rose-300">
+                  {targetAuthorEmail || "info@tecnodivergente.es"}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => {
+                    navigator.clipboard.writeText(targetAuthorEmail || "info@tecnodivergente.es");
+                    setCopiedEmail(true);
+                    setTimeout(() => setCopiedEmail(false), 2000);
+                  }}
+                  className="p-1 text-stone-500 hover:text-stone-900 dark:hover:text-white rounded cursor-pointer transition-colors"
+                  title="Copiar dirección de correo"
+                >
+                  {copiedEmail ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
+                </button>
+              </div>
+            </div>
           </div>
 
           {/* Sender inputs (if not logged in) */}

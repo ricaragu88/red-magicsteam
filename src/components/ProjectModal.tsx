@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { ProjectItem } from "@/data/projects";
 import {
   X,
@@ -25,6 +25,7 @@ import {
   Check,
   BookOpen,
   Edit3,
+  Copy,
 } from "lucide-react";
 
 interface ProjectModalProps {
@@ -50,6 +51,8 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({
   onEdit,
   onOpenIdentity,
 }) => {
+  const [copiedEmail, setCopiedEmail] = useState(false);
+
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose();
@@ -166,6 +169,27 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({
                       <strong>Equipo docente impulsor:</strong> {project.author.coAuthors.join(", ")}
                     </p>
                   )}
+
+                  {/* Direct Visible Author Contact */}
+                  <div className="flex items-center gap-2 mt-1.5 pt-1.5 border-t border-stone-200 dark:border-stone-800 text-[11px]">
+                    <span className="font-bold text-stone-700 dark:text-stone-300">Email de contacto:</span>
+                    <span className="font-mono text-rose-950 dark:text-rose-300 font-bold">
+                      {project.author.email || "info@tecnodivergente.es"}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        navigator.clipboard.writeText(project.author.email || "info@tecnodivergente.es");
+                        setCopiedEmail(true);
+                        setTimeout(() => setCopiedEmail(false), 2000);
+                      }}
+                      className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-stone-200/80 hover:bg-stone-300 dark:bg-stone-800 dark:hover:bg-stone-700 text-stone-700 dark:text-stone-300 cursor-pointer text-[10px] font-bold transition-colors"
+                      title="Copiar correo del autor"
+                    >
+                      {copiedEmail ? <Check className="w-2.5 h-2.5 text-emerald-600" /> : <Copy className="w-2.5 h-2.5" />}
+                      <span>{copiedEmail ? "¡Copiado!" : "Copiar"}</span>
+                    </button>
+                  </div>
                 </div>
               </div>
 

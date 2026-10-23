@@ -1,7 +1,23 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { X, Award, CheckCircle2, UserCheck, School, ArrowRight, Sparkles, LogOut, User, Mail, MapPin } from "lucide-react";
+import {
+  X,
+  Award,
+  CheckCircle2,
+  UserCheck,
+  School,
+  ArrowRight,
+  Sparkles,
+  LogOut,
+  User,
+  Mail,
+  MapPin,
+  Lock,
+  KeyRound,
+  ShieldCheck,
+  AlertCircle
+} from "lucide-react";
 
 export interface UserProfile {
   name: string;
@@ -36,6 +52,20 @@ export const IdentityModal: React.FC<IdentityModalProps> = ({
   );
   const [email, setEmail] = useState(currentProfile?.email || "");
 
+  // Author PIN verification state
+  const [pinInput, setPinInput] = useState("");
+  const [pinError, setPinError] = useState("");
+  const [showPinPrompt, setShowPinPrompt] = useState(false);
+  const [customPinInput, setCustomPinInput] = useState("");
+  const [pinChangeMsg, setPinChangeMsg] = useState("");
+
+  const getStoredPin = () => {
+    if (typeof window !== "undefined") {
+      return localStorage.getItem("red_author_pin") || "2026";
+    }
+    return "2026";
+  };
+
   useEffect(() => {
     if (currentProfile) {
       setName(currentProfile.name);
@@ -50,12 +80,51 @@ export const IdentityModal: React.FC<IdentityModalProps> = ({
       setLocation("");
       setEmail("");
     }
+    setPinInput("");
+    setPinError("");
+    setShowPinPrompt(false);
   }, [currentProfile, isOpen]);
 
   if (!isOpen) return null;
 
+  const handleVerifyAuthorPin = (e: React.FormEvent) => {
+    e.preventDefault();
+    const correctPin = getStoredPin();
+
+    if (pinInput.trim() === correctPin) {
+      const ricardoProfile: UserProfile = {
+        name: "Ricardo Aguado",
+        role: "Docente de Tecnología y Coordinador de Innovación",
+        school: "Colegio Juan de Lanuza",
+        location: "Zaragoza, Aragón",
+        award: "Colegio Juan de Lanuza",
+        email: "info@tecnodivergente.es",
+      };
+      onSaveProfile(ricardoProfile);
+      setPinError("");
+      setShowPinPrompt(false);
+      onClose();
+    } else {
+      setPinError("PIN incorrecto. Introduce la clave correcta de autor.");
+    }
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+
+    const isClaimingRicardo =
+      (name.trim().toLowerCase().includes("ricardo") && name.trim().toLowerCase().includes("aguado")) ||
+      email.trim().toLowerCase() === "info@tecnodivergente.es";
+
+    // If attempting to save as Ricardo Aguado without being already verified
+    if (isClaimingRicardo && (!currentProfile || !currentProfile.email.includes("tecnodivergente.es"))) {
+      if (pinInput.trim() !== getStoredPin()) {
+        setShowPinPrompt(true);
+        setPinError("Para identificarte como autor de Más Vida, Menos Redes debes introducir el PIN de seguridad.");
+        return;
+      }
+    }
+
     const profile: UserProfile = {
       name: name.trim(),
       role: role.trim() || "Docente",
@@ -68,26 +137,27 @@ export const IdentityModal: React.FC<IdentityModalProps> = ({
     onClose();
   };
 
-  const handleQuickLoginRicardo = () => {
-    const ricardoProfile: UserProfile = {
-      name: "Ricardo Aguado",
-      role: "Docente de Tecnología y Coordinador de Innovación",
-      school: "Colegio Juan de Lanuza",
-      location: "Zaragoza, Aragón",
-      award: "Colegio Juan de Lanuza",
-      email: "info@tecnodivergente.es",
-    };
-    onSaveProfile(ricardoProfile);
-    onClose();
-  };
-
   const handleLogout = () => {
     onSaveProfile(null);
     setName("");
     setSchool("");
     setLocation("");
     setEmail("");
+    setPinInput("");
+    setPinError("");
     onClose();
+  };
+
+  const handleChangePin = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (customPinInput.trim().length >= 4) {
+      localStorage.setItem("red_author_pin", customPinInput.trim());
+      setPinChangeMsg("¡PIN actualizado con éxito!");
+      setCustomPinInput("");
+      setTimeout(() => setPinChangeMsg(""), 3000);
+    } else {
+      setPinChangeMsg("El PIN debe tener al menos 4 caracteres.");
+    }
   };
 
   return (
@@ -119,62 +189,136 @@ export const IdentityModal: React.FC<IdentityModalProps> = ({
           
           {/* Active Session Info if already logged in */}
           {currentProfile ? (
-            <div className="p-4 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-900/60 flex items-center justify-between gap-3">
-              <div className="flex items-center gap-2.5">
-                <div className="w-10 h-10 rounded-full bg-emerald-100 dark:bg-emerald-900/80 flex items-center justify-center text-emerald-800 dark:text-emerald-200 font-bold text-sm">
-                  {currentProfile.name.charAt(0)}
+            <div className="space-y-4">
+              <div className="p-4 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-900/60 flex items-center justify-between gap-3">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-10 h-10 rounded-full bg-emerald-100 dark:bg-emerald-900/80 flex items-center justify-center text-emerald-800 dark:text-emerald-200 font-bold text-sm">
+                    {currentProfile.name.charAt(0)}
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-1.5">
+                      <p className="font-extrabold text-stone-900 dark:text-stone-100 text-xs sm:text-sm">
+                        {currentProfile.name}
+                      </p>
+                      {currentProfile.email === "info@tecnodivergente.es" && (
+                        <span className="text-[10px] bg-amber-100 dark:bg-amber-950 text-amber-900 dark:text-amber-200 font-bold px-1.5 py-0.5 rounded-full border border-amber-300 dark:border-amber-700">
+                          Autor
+                        </span>
+                      )}
+                    </div>
+                    <p className="text-[11px] text-stone-500 dark:text-stone-400">
+                      {currentProfile.school} · {currentProfile.email}
+                    </p>
+                  </div>
                 </div>
-                <div>
-                  <p className="font-extrabold text-stone-900 dark:text-stone-100 text-xs sm:text-sm">
-                    {currentProfile.name}
-                  </p>
-                  <p className="text-[11px] text-stone-500 dark:text-stone-400">
-                    {currentProfile.school} · {currentProfile.email}
-                  </p>
-                </div>
+                <button
+                  type="button"
+                  onClick={handleLogout}
+                  className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-bold text-rose-900 dark:text-rose-300 bg-rose-100 hover:bg-rose-200 dark:bg-rose-950 dark:hover:bg-rose-900 transition-colors cursor-pointer shrink-0"
+                  title="Cerrar sesión actual"
+                >
+                  <LogOut className="w-3.5 h-3.5" />
+                  <span>Salir</span>
+                </button>
               </div>
-              <button
-                type="button"
-                onClick={handleLogout}
-                className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-bold text-rose-900 dark:text-rose-300 bg-rose-100 hover:bg-rose-200 dark:bg-rose-950 dark:hover:bg-rose-900 transition-colors cursor-pointer shrink-0"
-                title="Cerrar sesión actual"
-              >
-                <LogOut className="w-3.5 h-3.5" />
-                <span>Cerrar Sesión</span>
-              </button>
+
+              {/* Author PIN customization for Ricardo */}
+              {currentProfile.email === "info@tecnodivergente.es" && (
+                <div className="p-3.5 rounded-2xl bg-stone-50 dark:bg-stone-950 border border-stone-200 dark:border-stone-800 space-y-2 text-xs">
+                  <div className="flex items-center gap-1.5 text-stone-700 dark:text-stone-300 font-bold">
+                    <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
+                    <span>Seguridad de Autor: Cambiar clave/PIN</span>
+                  </div>
+                  <form onSubmit={handleChangePin} className="flex gap-2">
+                    <input
+                      type="password"
+                      placeholder="Nuevo PIN (ej. 2026)"
+                      value={customPinInput}
+                      onChange={(e) => setCustomPinInput(e.target.value)}
+                      className="flex-1 px-3 py-1.5 bg-white dark:bg-stone-900 border border-stone-300 dark:border-stone-700 rounded-xl text-xs focus:outline-none focus:border-rose-900"
+                    />
+                    <button
+                      type="submit"
+                      className="px-3.5 py-1.5 rounded-xl bg-stone-800 hover:bg-stone-700 text-white font-bold text-xs cursor-pointer"
+                    >
+                      Actualizar
+                    </button>
+                  </form>
+                  {pinChangeMsg && (
+                    <p className="text-[11px] text-emerald-700 dark:text-emerald-400 font-semibold">{pinChangeMsg}</p>
+                  )}
+                </div>
+              )}
             </div>
           ) : (
-            /* 1-Click Quick Login for Ricardo Aguado */
-            <div className="p-4 rounded-2xl bg-gradient-to-r from-rose-50 to-amber-50 dark:from-rose-950/40 dark:to-amber-950/40 border border-rose-200 dark:border-rose-900/60 space-y-2">
+            /* Protected Author Login Box with PIN */
+            <div className="p-4 rounded-2xl bg-gradient-to-r from-rose-50 to-amber-50 dark:from-rose-950/40 dark:to-amber-950/40 border border-rose-200 dark:border-rose-900/60 space-y-3">
               <div className="flex items-center justify-between gap-2">
                 <span className="inline-flex items-center gap-1.5 text-xs font-bold text-rose-950 dark:text-rose-300">
-                  <Sparkles className="w-3.5 h-3.5 text-amber-500" />
-                  Acceso Rápido para el Autor
+                  <Lock className="w-3.5 h-3.5 text-amber-600" />
+                  Acceso de Autor Protegido
                 </span>
-                <span className="text-[10px] uppercase font-mono px-2 py-0.5 rounded-full bg-rose-100 dark:bg-rose-900 text-rose-900 dark:text-rose-200 font-bold">
-                  1-Clic
+                <span className="text-[10px] uppercase font-mono px-2 py-0.5 rounded-full bg-amber-100 dark:bg-amber-950 text-amber-900 dark:text-amber-300 font-bold border border-amber-300 dark:border-amber-800">
+                  PIN Requerido
                 </span>
               </div>
+
               <p className="text-xs text-stone-700 dark:text-stone-300 leading-relaxed">
-                ¿Eres <strong>Ricardo Aguado</strong>? Pulsa para identificarte al instante con tu perfil docente y activar los permisos de edición sobre <em>Más Vida, Menos Redes</em>.
+                ¿Eres <strong>Ricardo Aguado</strong>? Introduce tu PIN de autor para desbloquear los permisos de edición sobre <em>Más Vida, Menos Redes</em>.
               </p>
-              <button
-                type="button"
-                onClick={handleQuickLoginRicardo}
-                className="w-full py-2.5 px-4 rounded-xl text-xs font-bold bg-rose-950 hover:bg-rose-900 text-white shadow-xs cursor-pointer flex items-center justify-center gap-2 active:scale-95 transition-all"
-              >
-                <UserCheck className="w-4 h-4 text-emerald-400" />
-                <span>Entrar como Ricardo Aguado (Colegio Juan de Lanuza)</span>
-              </button>
+
+              {showPinPrompt ? (
+                <form onSubmit={handleVerifyAuthorPin} className="space-y-2">
+                  <div className="flex gap-2">
+                    <div className="relative flex-1">
+                      <KeyRound className="w-3.5 h-3.5 text-stone-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+                      <input
+                        type="password"
+                        required
+                        autoFocus
+                        placeholder="Introduce tu PIN (por defecto: 2026)"
+                        value={pinInput}
+                        onChange={(e) => {
+                          setPinInput(e.target.value);
+                          setPinError("");
+                        }}
+                        className="w-full pl-9 pr-3 py-2 bg-white dark:bg-stone-900 border border-stone-300 dark:border-stone-700 rounded-xl text-stone-900 dark:text-white text-xs focus:outline-none focus:border-rose-900 font-mono"
+                      />
+                    </div>
+                    <button
+                      type="submit"
+                      className="px-4 py-2 rounded-xl text-xs font-bold bg-rose-950 hover:bg-rose-900 text-white shadow-xs cursor-pointer active:scale-95 transition-all"
+                    >
+                      Verificar
+                    </button>
+                  </div>
+
+                  {pinError && (
+                    <p className="text-[11px] text-rose-700 dark:text-rose-400 font-bold flex items-center gap-1">
+                      <AlertCircle className="w-3.5 h-3.5" />
+                      <span>{pinError}</span>
+                    </p>
+                  )}
+                </form>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => setShowPinPrompt(true)}
+                  className="w-full py-2.5 px-4 rounded-xl text-xs font-bold bg-rose-950 hover:bg-rose-900 text-white shadow-xs cursor-pointer flex items-center justify-center gap-2 active:scale-95 transition-all"
+                >
+                  <Lock className="w-3.5 h-3.5 text-amber-400" />
+                  <span>Entrar como Ricardo Aguado (Requiere PIN)</span>
+                </button>
+              )}
             </div>
           )}
 
           <div className="space-y-1">
             <h3 className="text-sm font-black text-stone-950 dark:text-white">
-              {currentProfile ? "Actualizar mis Datos Docentes" : "O identifícate con tus datos de centro:"}
+              {currentProfile ? "Actualizar mis Datos Docentes" : "O identifícate como Docente / Visitante:"}
             </h3>
             <p className="text-xs text-stone-600 dark:text-stone-400">
-              Tu nombre y centro aparecerán como autor de los proyectos que aportes o te permitirán editar tus publicaciones.
+              Cualquier compañero puede identificarse para aportar sus propios temas o hacer match.
             </p>
           </div>
 
@@ -229,7 +373,7 @@ export const IdentityModal: React.FC<IdentityModalProps> = ({
             <div>
               <label className="block font-bold text-stone-700 dark:text-stone-300 mb-1 flex items-center gap-1.5">
                 <Mail className="w-3.5 h-3.5 text-rose-700" />
-                <span>Correo Electrónico (para recibir propuestas de Match):</span>
+                <span>Correo Electrónico (para contacto entre docentes):</span>
               </label>
               <input
                 type="email"
