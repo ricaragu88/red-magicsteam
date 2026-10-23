@@ -2,7 +2,7 @@
 
 import React from "react";
 import { ProjectItem } from "@/data/projects";
-import { Award, ArrowUpRight, School, Users, FileText, Zap, Mail, Heart, Play, Sparkles, Check } from "lucide-react";
+import { Award, ArrowUpRight, School, Users, FileText, Zap, Mail, Heart, Play, Sparkles, Check, Edit3, UserCheck } from "lucide-react";
 
 interface ProjectCardProps {
   project: ProjectItem;
@@ -11,6 +11,9 @@ interface ProjectCardProps {
   onContactAuthor?: (project: ProjectItem) => void;
   onToggleMatch?: (project: ProjectItem) => void;
   isMatched?: boolean;
+  isAuthor?: boolean;
+  onEdit?: (project: ProjectItem) => void;
+  onOpenIdentity?: () => void;
 }
 
 export const ProjectCard: React.FC<ProjectCardProps> = ({
@@ -20,6 +23,9 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
   onContactAuthor,
   onToggleMatch,
   isMatched = false,
+  isAuthor = false,
+  onEdit,
+  onOpenIdentity,
 }) => {
   const getScoreBadge = (score: number) => {
     if (score >= 90) return "bg-emerald-50 text-emerald-950 dark:bg-emerald-950/80 dark:text-emerald-200 border-emerald-200 dark:border-emerald-800";
@@ -168,7 +174,31 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
       </div>
 
       {/* Card Actions */}
-      <div className="p-5 sm:p-6 pt-0 border-t border-stone-100 dark:border-stone-800/80 mt-2 space-y-2">
+      <div className="p-5 sm:p-6 pt-0 border-t border-stone-100 dark:border-stone-800/80 mt-2 space-y-2.5">
+        
+        {/* Author Edit Action (Visible if logged in as the author) */}
+        {isAuthor && onEdit && (
+          <button
+            onClick={() => onEdit(project)}
+            className="w-full inline-flex items-center justify-center gap-1.5 py-2 px-3 rounded-full text-xs font-bold bg-amber-50 hover:bg-amber-100 dark:bg-amber-950/80 dark:hover:bg-amber-900/90 text-amber-950 dark:text-amber-200 border border-amber-300 dark:border-amber-700 shadow-xs active:scale-95 transition-all cursor-pointer"
+          >
+            <Edit3 className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
+            <span>Editar Mi Proyecto (Modo Autor)</span>
+          </button>
+        )}
+
+        {/* Prompt to identify if this is Ricardo's project and user is not identified yet */}
+        {!isAuthor && project.id === "mas-vida-menos-redes" && onOpenIdentity && (
+          <div className="text-center py-0.5">
+            <button
+              onClick={onOpenIdentity}
+              className="text-[11px] font-semibold text-stone-500 hover:text-rose-900 dark:text-stone-400 dark:hover:text-rose-300 underline underline-offset-2 cursor-pointer transition-colors"
+            >
+              ¿Eres Ricardo Aguado? Identifícate para editar este proyecto
+            </button>
+          </div>
+        )}
+
         <div className="flex items-center gap-2">
           {/* Match Button */}
           {onToggleMatch && (

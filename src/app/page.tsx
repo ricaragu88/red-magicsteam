@@ -12,6 +12,7 @@ import { PublishModal } from "@/components/PublishModal";
 import { ContactModal } from "@/components/ContactModal";
 import { IdentityModal, UserProfile } from "@/components/IdentityModal";
 import { MatchModal } from "@/components/MatchModal";
+import { EditProjectModal } from "@/components/EditProjectModal";
 import { AISynergyEngine } from "@/components/AISynergyEngine";
 import { ManifestoSection } from "@/components/ManifestoSection";
 import { Footer } from "@/components/Footer";
@@ -25,6 +26,8 @@ export default function Home() {
   const [isInviteOpen, setIsInviteOpen] = useState(false);
   const [isPublishOpen, setIsPublishOpen] = useState(false);
   const [isIdentityOpen, setIsIdentityOpen] = useState(false);
+  const [isEditOpen, setIsEditOpen] = useState(false);
+  const [editingProject, setEditingProject] = useState<ProjectItem | null>(null);
   const [isMatchModalOpen, setIsMatchModalOpen] = useState(false);
   const [matchModalProject, setMatchModalProject] = useState<ProjectItem | null>(null);
   const [inviteContext, setInviteContext] = useState<string | null>(null);
@@ -89,15 +92,23 @@ export default function Home() {
       console.error(e);
     }
 
-    // 4. Load community / teacher contributed projects
+    // 4. Load projects (flagship with potential author overrides + community projects)
     try {
+      let baseProjects = [...REAL_PROJECTS_DATA];
+      const flagshipOverride = localStorage.getItem("red_project_flagship_override");
+      if (flagshipOverride) {
+        const parsedOverride: ProjectItem = JSON.parse(flagshipOverride);
+        baseProjects = baseProjects.map(p => p.id === parsedOverride.id ? parsedOverride : p);
+      }
+
       const savedCommunity = localStorage.getItem("red_community_projects");
       if (savedCommunity) {
         const parsed: ProjectItem[] = JSON.parse(savedCommunity);
-        // Combine community projects with default flagship projects
-        const existingIds = new Set(REAL_PROJECTS_DATA.map(p => p.id));
+        const existingIds = new Set(baseProjects.map(p => p.id));
         const customFiltered = parsed.filter(p => !existingIds.has(p.id));
-        setProjects([...customFiltered, ...REAL_PROJECTS_DATA]);
+        setProjects([...customFiltered, ...baseProjects]);
+      } else {
+        setProjects(baseProjects);
       }
     } catch (e) {
       console.error(e);
@@ -129,9 +140,73 @@ export default function Home() {
     }
   };
 
-  const handleSaveProfile = (profile: UserProfile) => {
+  const handleSaveProfile = (profile: UserProfile | null) => {
     setCurrentUser(profile);
-    localStorage.setItem("red_teacher_profile", JSON.stringify(profile));
+    if (profile) {
+      localStorage.setItem("red_teacher_profile", JSON.stringify(profile));
+    } else {
+      localStorage.removeItem("red_teacher_profile");
+    }
+  };
+
+  // Helper to determine if the currently logged-in user is the author of a project
+  const checkIsAuthor = (project: ProjectItem, user: UserProfile | null): boolean => {
+    if (!user) return false;
+    const userEmail = user.email?.trim().toLowerCase();
+    const authorEmail = project.author.email?.trim().toLowerCase();
+    if (userEmail && authorEmail && userEmail === authorEmail) return true;
+
+    const userName = user.name?.trim().toLowerCase();
+    const authorName = project.author.name?.trim().toLowerCase();
+    if (userName && authorName && (userName === authorName || authorName.includes(userName) || userName.includes(authorName))) {
+      return true;
+    }
+
+    // Ricardo Aguado verification on "Más Vida, Menos Redes"
+    if (
+      project.id === "mas-vida-menos-redes" &&
+      (userName?.includes("ricardo") || userEmail?.includes("tecnodivergente"))
+    ) {
+      return true;
+    }
+
+    return false;
+  };
+
+  const handleEditProject = (project: ProjectItem) => {
+    setEditingProject(project);
+    setIsEditOpen(true);
+  };
+
+  const handleSaveProjectEdit = (updatedProject: ProjectItem) => {
+    setProjects((prev) =>
+      prev.map((p) => (p.id === updatedProject.id ? updatedProject : p))
+    );
+
+    if (selectedProject?.id === updatedProject.id) {
+      setSelectedProject(updatedProject);
+    }
+
+    if (updatedProject.id === "mas-vida-menos-redes") {
+      try {
+        localStorage.setItem("red_project_flagship_override", JSON.stringify(updatedProject));
+      } catch (e) {
+        console.error(e);
+      }
+    } else {
+      try {
+        const savedCommunity = localStorage.getItem("red_community_projects");
+        if (savedCommunity) {
+          const list: ProjectItem[] = JSON.parse(savedCommunity);
+          const updatedList = list.map((p) => (p.id === updatedProject.id ? updatedProject : p));
+          localStorage.setItem("red_community_projects", JSON.stringify(updatedList));
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    alert("¡Tu proyecto ha sido actualizado con éxito! Los cambios y enlaces de descarga están guardados.");
   };
 
   const handleSelectProject = (project: ProjectItem) => {
@@ -270,6 +345,9 @@ export default function Home() {
           onOpenPublish={() => setIsPublishOpen(true)}
           onToggleMatch={handleToggleMatch}
           matchedProjectIds={matchedProjectIds}
+          currentUser={currentUser}
+          onEditProject={handleEditProject}
+          onOpenIdentity={() => setIsIdentityOpen(true)}
         />
 
         {/* Hermanamientos & Sinergias Pedagógicas */}
@@ -290,6 +368,16 @@ export default function Home() {
         onContactAuthor={handleOpenContactForProject}
         onToggleMatch={handleToggleMatch}
         isMatched={selectedProject ? matchedProjectIds.includes(selectedProject.id) : false}
+        isAuthor={selectedProject ? checkIsAuthor(selectedProject, currentUser) : false}
+        onEdit={handleEditProject}
+        onOpenIdentity={() => setIsIdentityOpen(true)}
+      />
+
+      <EditProjectModal
+        isOpen={isEditOpen}
+        onClose={() => setIsEditOpen(false)}
+        project={editingProject}
+        onSave={handleSaveProjectEdit}
       />
 
       <ReplicateModal

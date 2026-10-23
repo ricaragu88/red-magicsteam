@@ -3,6 +3,7 @@
 import React, { useState, useMemo } from "react";
 import { ProjectItem, THEMATIC_CATEGORIES } from "@/data/projects";
 import { ProjectCard } from "./ProjectCard";
+import { UserProfile } from "./IdentityModal";
 import { Search, Sparkles, FilePlus, Heart, Filter } from "lucide-react";
 
 interface ProjectsExplorerProps {
@@ -13,6 +14,9 @@ interface ProjectsExplorerProps {
   onOpenPublish: () => void;
   onToggleMatch?: (project: ProjectItem) => void;
   matchedProjectIds?: string[];
+  currentUser?: UserProfile | null;
+  onEditProject?: (project: ProjectItem) => void;
+  onOpenIdentity?: () => void;
 }
 
 export const ProjectsExplorer: React.FC<ProjectsExplorerProps> = ({
@@ -23,9 +27,28 @@ export const ProjectsExplorer: React.FC<ProjectsExplorerProps> = ({
   onOpenPublish,
   onToggleMatch,
   matchedProjectIds = [],
+  currentUser,
+  onEditProject,
+  onOpenIdentity,
 }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
+
+  const isAuthorForProject = (project: ProjectItem): boolean => {
+    if (!currentUser) return false;
+    const userEmail = currentUser.email?.trim().toLowerCase();
+    const authorEmail = project.author.email?.trim().toLowerCase();
+    if (userEmail && authorEmail && userEmail === authorEmail) return true;
+    const userName = currentUser.name?.trim().toLowerCase();
+    const authorName = project.author.name?.trim().toLowerCase();
+    if (userName && authorName && (userName === authorName || authorName.includes(userName) || userName.includes(authorName))) {
+      return true;
+    }
+    if (project.id === "mas-vida-menos-redes" && (userName?.includes("ricardo") || userEmail?.includes("tecnodivergente"))) {
+      return true;
+    }
+    return false;
+  };
 
   const filteredProjects = useMemo(() => {
     return projects.filter((project) => {
@@ -135,6 +158,9 @@ export const ProjectsExplorer: React.FC<ProjectsExplorerProps> = ({
               onContactAuthor={onContactProject}
               onToggleMatch={onToggleMatch}
               isMatched={matchedProjectIds.includes(project.id)}
+              isAuthor={isAuthorForProject(project)}
+              onEdit={onEditProject}
+              onOpenIdentity={onOpenIdentity}
             />
           ))}
 

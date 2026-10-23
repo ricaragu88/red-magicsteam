@@ -114,9 +114,9 @@ export const PublishModal: React.FC<PublishModalProps> = ({
       image: imagePreview || "/images/portadaTecnodivergente.jpg",
       videoUrl: videoUrl.trim() || undefined,
       replicabilityScore: 88,
-      replicationsCount: 1,
-      matchesCount: 1,
-      studentsImpacted: 60,
+      replicationsCount: 0,
+      matchesCount: 0,
+      studentsImpacted: 0,
       summary,
       pedagogicalObjective: pedagogicalObjective || "Facilitar la transferencia metodológica de aula y fomentar el aprendizaje colaborativo intercentros.",
       replicability: {

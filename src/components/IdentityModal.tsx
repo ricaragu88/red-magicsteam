@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useState } from "react";
-import { X, Award, CheckCircle2, UserCheck, School, ArrowRight, Sparkles } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import { X, Award, CheckCircle2, UserCheck, School, ArrowRight, Sparkles, LogOut, User, Mail, MapPin } from "lucide-react";
 
 export interface UserProfile {
   name: string;
@@ -15,7 +15,7 @@ export interface UserProfile {
 interface IdentityModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSaveProfile: (profile: UserProfile) => void;
+  onSaveProfile: (profile: UserProfile | null) => void;
   initialInviteContext?: string | null;
   currentProfile?: UserProfile | null;
 }
@@ -32,23 +32,61 @@ export const IdentityModal: React.FC<IdentityModalProps> = ({
   const [school, setSchool] = useState(currentProfile?.school || "");
   const [location, setLocation] = useState(currentProfile?.location || "");
   const [award, setAward] = useState(
-    currentProfile?.award || initialInviteContext || "National Teacher Prize"
+    currentProfile?.award || initialInviteContext || "Docente Innovador"
   );
   const [email, setEmail] = useState(currentProfile?.email || "");
+
+  useEffect(() => {
+    if (currentProfile) {
+      setName(currentProfile.name);
+      setRole(currentProfile.role);
+      setSchool(currentProfile.school);
+      setLocation(currentProfile.location);
+      setAward(currentProfile.award);
+      setEmail(currentProfile.email);
+    } else {
+      setName("");
+      setSchool("");
+      setLocation("");
+      setEmail("");
+    }
+  }, [currentProfile, isOpen]);
 
   if (!isOpen) return null;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const profile: UserProfile = {
-      name,
-      role,
-      school,
-      location,
-      award,
-      email,
+      name: name.trim(),
+      role: role.trim() || "Docente",
+      school: school.trim(),
+      location: location.trim(),
+      award: award.trim() || "Docente",
+      email: email.trim(),
     };
     onSaveProfile(profile);
+    onClose();
+  };
+
+  const handleQuickLoginRicardo = () => {
+    const ricardoProfile: UserProfile = {
+      name: "Ricardo Aguado",
+      role: "Docente de Tecnología y Coordinador de Innovación",
+      school: "Colegio Juan de Lanuza",
+      location: "Zaragoza, Aragón",
+      award: "Colegio Juan de Lanuza",
+      email: "info@tecnodivergente.es",
+    };
+    onSaveProfile(ricardoProfile);
+    onClose();
+  };
+
+  const handleLogout = () => {
+    onSaveProfile(null);
+    setName("");
+    setSchool("");
+    setLocation("");
+    setEmail("");
     onClose();
   };
 
@@ -61,11 +99,11 @@ export const IdentityModal: React.FC<IdentityModalProps> = ({
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-stone-200 dark:border-stone-800 bg-white/95 dark:bg-stone-900/90">
           <div className="flex items-center gap-2">
-            <span className="p-1.5 rounded-full bg-amber-100 dark:bg-amber-950 text-amber-900 dark:text-amber-300">
-              <Award className="w-4 h-4" />
+            <span className="p-1.5 rounded-full bg-rose-100 dark:bg-rose-950 text-rose-900 dark:text-rose-300">
+              <UserCheck className="w-4 h-4" />
             </span>
             <span className="text-sm font-bold text-stone-950 dark:text-white">
-              Identificación de Docente Galardonado
+              Identificación y Acceso Docente
             </span>
           </div>
           <button
@@ -79,44 +117,89 @@ export const IdentityModal: React.FC<IdentityModalProps> = ({
         {/* Content */}
         <div className="p-6 sm:p-8 space-y-5">
           
-          {/* Welcome Card if coming from invite */}
-          {initialInviteContext ? (
-            <div className="p-4 rounded-2xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900/60 space-y-1">
-              <span className="inline-flex items-center gap-1.5 text-xs font-bold text-rose-950 dark:text-rose-300">
-                <Sparkles className="w-3.5 h-3.5 text-amber-500" />
-                ¡Bienvenido a la Red Nacional!
-              </span>
-              <p className="text-xs text-stone-700 dark:text-stone-300 leading-relaxed">
-                Has accedido mediante la invitación para el grupo del <strong className="text-stone-950 dark:text-white">{initialInviteContext}</strong>. Identifícate para activar tu distintivo de <strong className="text-rose-950 dark:text-rose-300">Docente Verificado</strong> y poder publicar y colaborar sin esperas.
-              </p>
+          {/* Active Session Info if already logged in */}
+          {currentProfile ? (
+            <div className="p-4 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-900/60 flex items-center justify-between gap-3">
+              <div className="flex items-center gap-2.5">
+                <div className="w-10 h-10 rounded-full bg-emerald-100 dark:bg-emerald-900/80 flex items-center justify-center text-emerald-800 dark:text-emerald-200 font-bold text-sm">
+                  {currentProfile.name.charAt(0)}
+                </div>
+                <div>
+                  <p className="font-extrabold text-stone-900 dark:text-stone-100 text-xs sm:text-sm">
+                    {currentProfile.name}
+                  </p>
+                  <p className="text-[11px] text-stone-500 dark:text-stone-400">
+                    {currentProfile.school} · {currentProfile.email}
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={handleLogout}
+                className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-bold text-rose-900 dark:text-rose-300 bg-rose-100 hover:bg-rose-200 dark:bg-rose-950 dark:hover:bg-rose-900 transition-colors cursor-pointer shrink-0"
+                title="Cerrar sesión actual"
+              >
+                <LogOut className="w-3.5 h-3.5" />
+                <span>Cerrar Sesión</span>
+              </button>
             </div>
           ) : (
-            <div className="space-y-1">
-              <h3 className="text-lg font-black text-stone-950 dark:text-white">
-                Identifícate como Docente de la Red
-              </h3>
-              <p className="text-xs text-stone-600 dark:text-stone-400">
-                Tu perfil aparecerá como autor en los proyectos que publiques y facilitará que otros compañeros te contacten.
+            /* 1-Click Quick Login for Ricardo Aguado */
+            <div className="p-4 rounded-2xl bg-gradient-to-r from-rose-50 to-amber-50 dark:from-rose-950/40 dark:to-amber-950/40 border border-rose-200 dark:border-rose-900/60 space-y-2">
+              <div className="flex items-center justify-between gap-2">
+                <span className="inline-flex items-center gap-1.5 text-xs font-bold text-rose-950 dark:text-rose-300">
+                  <Sparkles className="w-3.5 h-3.5 text-amber-500" />
+                  Acceso Rápido para el Autor
+                </span>
+                <span className="text-[10px] uppercase font-mono px-2 py-0.5 rounded-full bg-rose-100 dark:bg-rose-900 text-rose-900 dark:text-rose-200 font-bold">
+                  1-Clic
+                </span>
+              </div>
+              <p className="text-xs text-stone-700 dark:text-stone-300 leading-relaxed">
+                ¿Eres <strong>Ricardo Aguado</strong>? Pulsa para identificarte al instante con tu perfil docente y activar los permisos de edición sobre <em>Más Vida, Menos Redes</em>.
               </p>
+              <button
+                type="button"
+                onClick={handleQuickLoginRicardo}
+                className="w-full py-2.5 px-4 rounded-xl text-xs font-bold bg-rose-950 hover:bg-rose-900 text-white shadow-xs cursor-pointer flex items-center justify-center gap-2 active:scale-95 transition-all"
+              >
+                <UserCheck className="w-4 h-4 text-emerald-400" />
+                <span>Entrar como Ricardo Aguado (Colegio Juan de Lanuza)</span>
+              </button>
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-4 text-xs">
+          <div className="space-y-1">
+            <h3 className="text-sm font-black text-stone-950 dark:text-white">
+              {currentProfile ? "Actualizar mis Datos Docentes" : "O identifícate con tus datos de centro:"}
+            </h3>
+            <p className="text-xs text-stone-600 dark:text-stone-400">
+              Tu nombre y centro aparecerán como autor de los proyectos que aportes o te permitirán editar tus publicaciones.
+            </p>
+          </div>
+
+          <form onSubmit={handleSubmit} className="space-y-3.5 text-xs">
             <div>
-              <label className="block font-bold text-stone-700 dark:text-stone-300 mb-1">Tu Nombre y Apellidos:</label>
+              <label className="block font-bold text-stone-700 dark:text-stone-300 mb-1 flex items-center gap-1.5">
+                <User className="w-3.5 h-3.5 text-rose-700" />
+                <span>Tu Nombre y Apellidos:</span>
+              </label>
               <input
                 type="text"
                 required
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="Ej: Carmen Valenzuela"
-                className="w-full px-3.5 py-2.5 bg-stone-50 dark:bg-stone-950 border border-stone-300 dark:border-stone-700 rounded-xl text-stone-900 dark:text-white text-xs focus:outline-none focus:border-rose-900"
+                className="w-full px-3.5 py-2.5 bg-stone-50 dark:bg-stone-950 border border-stone-300 dark:border-stone-700 rounded-xl text-stone-900 dark:text-white text-xs focus:outline-none focus:border-rose-900 font-medium"
               />
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
-                <label className="block font-bold text-stone-700 dark:text-stone-300 mb-1">Colegio / Instituto (IES):</label>
+                <label className="block font-bold text-stone-700 dark:text-stone-300 mb-1 flex items-center gap-1.5">
+                  <School className="w-3.5 h-3.5 text-rose-700" />
+                  <span>Centro Educativo (Colegio / IES):</span>
+                </label>
                 <input
                   type="text"
                   required
@@ -128,7 +211,10 @@ export const IdentityModal: React.FC<IdentityModalProps> = ({
               </div>
 
               <div>
-                <label className="block font-bold text-stone-700 dark:text-stone-300 mb-1">Ciudad / Provincia:</label>
+                <label className="block font-bold text-stone-700 dark:text-stone-300 mb-1 flex items-center gap-1.5">
+                  <MapPin className="w-3.5 h-3.5 text-rose-700" />
+                  <span>Ciudad / Provincia:</span>
+                </label>
                 <input
                   type="text"
                   required
@@ -140,35 +226,19 @@ export const IdentityModal: React.FC<IdentityModalProps> = ({
               </div>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div>
-                <label className="block font-bold text-stone-700 dark:text-stone-300 mb-1">Certamen / Reconocimiento:</label>
-                <select
-                  value={award}
-                  onChange={(e) => setAward(e.target.value)}
-                  className="w-full px-3.5 py-2.5 bg-stone-50 dark:bg-stone-950 border border-stone-300 dark:border-stone-700 rounded-xl text-stone-900 dark:text-white text-xs focus:outline-none focus:border-rose-900"
-                >
-                  <option>National Teacher Prize</option>
-                  <option>Premios Mentes AMI</option>
-                  <option>Premios RetoTech Endesa</option>
-                  <option>Premios Educa Abanca</option>
-                  <option>Premios SIMO Educación</option>
-                  <option>Premios Nacionales MEFP</option>
-                  <option>Docente Invitado</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="block font-bold text-stone-700 dark:text-stone-300 mb-1">Correo Electrónico:</label>
-                <input
-                  type="email"
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="carmen@educa.es"
-                  className="w-full px-3.5 py-2.5 bg-stone-50 dark:bg-stone-950 border border-stone-300 dark:border-stone-700 rounded-xl text-stone-900 dark:text-white text-xs focus:outline-none focus:border-rose-900"
-                />
-              </div>
+            <div>
+              <label className="block font-bold text-stone-700 dark:text-stone-300 mb-1 flex items-center gap-1.5">
+                <Mail className="w-3.5 h-3.5 text-rose-700" />
+                <span>Correo Electrónico (para recibir propuestas de Match):</span>
+              </label>
+              <input
+                type="email"
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="tu.correo@educa.es"
+                className="w-full px-3.5 py-2.5 bg-stone-50 dark:bg-stone-950 border border-stone-300 dark:border-stone-700 rounded-xl text-stone-900 dark:text-white text-xs focus:outline-none focus:border-rose-900 font-medium"
+              />
             </div>
 
             <button
@@ -176,7 +246,7 @@ export const IdentityModal: React.FC<IdentityModalProps> = ({
               className="w-full py-3.5 rounded-full text-xs font-bold bg-rose-950 hover:bg-rose-900 dark:bg-rose-900 dark:hover:bg-rose-800 text-white shadow-xs active:scale-95 transition-all cursor-pointer flex items-center justify-center gap-2 mt-4"
             >
               <UserCheck className="w-4 h-4" />
-              <span>Guardar Perfil y Activar Insignia Verificada</span>
+              <span>{currentProfile ? "Actualizar Mi Perfil Docente" : "Guardar Perfil y Activar Acceso"}</span>
             </button>
           </form>
 

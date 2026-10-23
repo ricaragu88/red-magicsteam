@@ -160,8 +160,8 @@ export const REAL_PROJECTS_DATA: ProjectItem[] = [
     image: "/images/masvidamenosredes.jpg",
     videoUrl: "https://www.youtube.com/watch?v=pd3_mC_vYn4",
     replicabilityScore: 92,
-    replicationsCount: 8,
-    matchesCount: 16,
+    replicationsCount: 3,
+    matchesCount: 0,
     studentsImpacted: 840,
     isFlagship: true,
     summary: "Durante una semana completa, el alumnado sustituye voluntariamente sus smartphones por terminales básicos de teclas (facilitados por la operadora aragonesa Embou), eliminando notificaciones, redes sociales y vídeos compulsivos mientras preserva la comunicación esencial con las familias. Mediante Aprendizaje-Servicio (ApS), los estudiantes que viven el reto se convierten en mentores de alumnos de Primaria y de sus familias. El modelo está científicamente documentado por la Asociación Aragonesa de Psicopedagogía y transferido con éxito a centros públicos (IES Ramón Pignatelli e IES Valdespartera).",
@@ -229,21 +229,6 @@ export const REAL_PROJECTS_DATA: ProjectItem[] = [
         type: "PDF",
         size: "366 KB",
         url: "/recursos/enlace-aap-sep2026.pdf"
-      },
-      {
-        title: "Plantilla del Pacto y Compromiso para Familias",
-        type: "Plantilla",
-        size: "180 KB"
-      },
-      {
-        title: "Diario de Abordo y Registro de Emociones para Alumnado",
-        type: "Rúbrica",
-        size: "420 KB"
-      },
-      {
-        title: "Guía de Alianza y Solicitud para Operadoras de Telecomunicaciones",
-        type: "Guía",
-        size: "520 KB"
       }
     ],
     tags: [

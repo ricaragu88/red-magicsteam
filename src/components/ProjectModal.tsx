@@ -24,6 +24,7 @@ import {
   Users,
   Check,
   BookOpen,
+  Edit3,
 } from "lucide-react";
 
 interface ProjectModalProps {
@@ -33,6 +34,9 @@ interface ProjectModalProps {
   onContactAuthor?: (project: ProjectItem) => void;
   onToggleMatch?: (project: ProjectItem) => void;
   isMatched?: boolean;
+  isAuthor?: boolean;
+  onEdit?: (project: ProjectItem) => void;
+  onOpenIdentity?: () => void;
 }
 
 export const ProjectModal: React.FC<ProjectModalProps> = ({
@@ -42,6 +46,9 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({
   onContactAuthor,
   onToggleMatch,
   isMatched = false,
+  isAuthor = false,
+  onEdit,
+  onOpenIdentity,
 }) => {
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -93,6 +100,16 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({
                 <Sparkles className="w-3 h-3 text-amber-500" />
                 Proyecto Referencia Validado
               </span>
+            )}
+            {isAuthor && onEdit && (
+              <button
+                onClick={() => onEdit(project)}
+                className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold bg-amber-100 hover:bg-amber-200 dark:bg-amber-950 dark:hover:bg-amber-900 text-amber-950 dark:text-amber-200 border border-amber-300 dark:border-amber-700 shadow-xs cursor-pointer active:scale-95 transition-all"
+                title="Editar datos, vídeos y descargas"
+              >
+                <Edit3 className="w-3.5 h-3.5 text-amber-700 dark:text-amber-400" />
+                <span>Editar Mi Proyecto</span>
+              </button>
             )}
           </div>
 
@@ -152,8 +169,29 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({
                 </div>
               </div>
 
-              {/* Top Action Buttons (Match & Contact) */}
-              <div className="flex items-center gap-2 shrink-0">
+              {/* Top Action Buttons (Match & Contact & Edit) */}
+              <div className="flex flex-wrap items-center gap-2 shrink-0">
+                {isAuthor && onEdit && (
+                  <button
+                    onClick={() => onEdit(project)}
+                    className="inline-flex items-center gap-1.5 px-3.5 py-2.5 rounded-full text-xs font-bold bg-amber-100 hover:bg-amber-200 dark:bg-amber-950 dark:hover:bg-amber-900 text-amber-950 dark:text-amber-200 border border-amber-300 dark:border-amber-700 shadow-xs cursor-pointer active:scale-95 transition-all"
+                    title="Editar datos, vídeos y descargas"
+                  >
+                    <Edit3 className="w-3.5 h-3.5 text-amber-700 dark:text-amber-400" />
+                    <span>Editar Mi Proyecto</span>
+                  </button>
+                )}
+
+                {!isAuthor && project.id === "mas-vida-menos-redes" && onOpenIdentity && (
+                  <button
+                    onClick={onOpenIdentity}
+                    className="inline-flex items-center gap-1 px-3 py-2 rounded-full text-xs font-semibold text-stone-600 dark:text-stone-300 hover:text-stone-900 dark:hover:text-white bg-stone-100 hover:bg-stone-200 dark:bg-stone-850 border border-stone-200 dark:border-stone-700 cursor-pointer transition-colors"
+                  >
+                    <Edit3 className="w-3 h-3 text-rose-700" />
+                    <span>¿Eres Ricardo? Identifícate para editar</span>
+                  </button>
+                )}
+
                 {onToggleMatch && (
                   <button
                     onClick={() => onToggleMatch(project)}
@@ -494,6 +532,16 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({
               >
                 <Mail className="w-4 h-4 text-rose-900 dark:text-rose-400" />
                 <span>Contactar</span>
+              </button>
+            )}
+
+            {isAuthor && onEdit && (
+              <button
+                onClick={() => onEdit(project)}
+                className="inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-full text-xs font-bold bg-amber-100 hover:bg-amber-200 dark:bg-amber-950 dark:hover:bg-amber-900 text-amber-950 dark:text-amber-200 border border-amber-300 dark:border-amber-700 transition-colors cursor-pointer whitespace-nowrap shadow-xs"
+              >
+                <Edit3 className="w-3.5 h-3.5 text-amber-700 dark:text-amber-400" />
+                <span>Editar Proyecto</span>
               </button>
             )}
 

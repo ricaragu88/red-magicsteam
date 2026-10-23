@@ -117,11 +117,11 @@ export const Navbar: React.FC<NavbarProps> = ({
             {currentUser ? (
               <button
                 onClick={onOpenIdentity}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold bg-amber-50 dark:bg-amber-950/80 text-amber-950 dark:text-amber-200 border border-amber-300 dark:border-amber-700 shadow-xs cursor-pointer"
-                title="Editar mi perfil docente"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold bg-amber-50 hover:bg-amber-100 dark:bg-amber-950/80 dark:hover:bg-amber-900 text-amber-950 dark:text-amber-200 border border-amber-300 dark:border-amber-700 shadow-xs cursor-pointer transition-colors"
+                title="Ver o editar mi perfil docente"
               >
-                <Award className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
-                <span className="truncate max-w-[110px] sm:max-w-[150px]">{currentUser.name}</span>
+                <Award className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400 shrink-0" />
+                <span className="truncate max-w-[90px] sm:max-w-[140px]">{currentUser.name}</span>
                 <span className="hidden md:inline-flex items-center gap-0.5 text-[10px] font-extrabold text-emerald-800 bg-emerald-100 dark:bg-emerald-950 px-1.5 py-0.5 rounded-full border border-emerald-300 dark:border-emerald-700">
                   <CheckCircle2 className="w-2.5 h-2.5" />
                   Docente
@@ -130,11 +130,11 @@ export const Navbar: React.FC<NavbarProps> = ({
             ) : (
               <button
                 onClick={onOpenIdentity}
-                className="hidden sm:inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-semibold text-stone-700 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-900 border border-stone-300 dark:border-stone-700 cursor-pointer"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold text-stone-800 dark:text-stone-200 hover:bg-stone-100 dark:hover:bg-stone-850 border border-stone-300 dark:border-stone-700 shadow-xs cursor-pointer transition-colors"
                 title="Identifícate con tu nombre y centro"
               >
                 <User className="w-3.5 h-3.5 text-rose-900 dark:text-rose-400" />
-                <span>Identificarme</span>
+                <span>Acceso Docente</span>
               </button>
             )}
 
