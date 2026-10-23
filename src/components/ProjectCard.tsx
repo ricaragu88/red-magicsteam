@@ -176,25 +176,25 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
       {/* Card Actions */}
       <div className="p-5 sm:p-6 pt-0 border-t border-stone-100 dark:border-stone-800/80 mt-2 space-y-2.5">
         
-        {/* Author Edit Action (Visible if logged in as the author) */}
+        {/* Author / Admin Edit Action (Visible if logged in as admin/author) */}
         {isAuthor && onEdit && (
           <button
             onClick={() => onEdit(project)}
             className="w-full inline-flex items-center justify-center gap-1.5 py-2 px-3 rounded-full text-xs font-bold bg-amber-50 hover:bg-amber-100 dark:bg-amber-950/80 dark:hover:bg-amber-900/90 text-amber-950 dark:text-amber-200 border border-amber-300 dark:border-amber-700 shadow-xs active:scale-95 transition-all cursor-pointer"
           >
             <Edit3 className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
-            <span>Editar Mi Proyecto (Modo Autor)</span>
+            <span>Editar Proyecto (Administrador)</span>
           </button>
         )}
 
-        {/* Prompt to identify if this is Ricardo's project and user is not identified yet */}
+        {/* Prompt to access as admin if not logged in */}
         {!isAuthor && project.id === "mas-vida-menos-redes" && onOpenIdentity && (
           <div className="text-center py-0.5">
             <button
               onClick={onOpenIdentity}
               className="text-[11px] font-semibold text-stone-500 hover:text-rose-900 dark:text-stone-400 dark:hover:text-rose-300 underline underline-offset-2 cursor-pointer transition-colors"
             >
-              ¿Eres Ricardo Aguado? Identifícate para editar este proyecto
+              Acceso Administrador para gestionar proyecto
             </button>
           </div>
         )}

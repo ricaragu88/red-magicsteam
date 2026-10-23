@@ -202,7 +202,7 @@ export const IdentityModal: React.FC<IdentityModalProps> = ({
                       </p>
                       {currentProfile.email === "info@tecnodivergente.es" && (
                         <span className="text-[10px] bg-amber-100 dark:bg-amber-950 text-amber-900 dark:text-amber-200 font-bold px-1.5 py-0.5 rounded-full border border-amber-300 dark:border-amber-700">
-                          Autor
+                          Administrador
                         </span>
                       )}
                     </div>
@@ -227,7 +227,7 @@ export const IdentityModal: React.FC<IdentityModalProps> = ({
                 <div className="p-3.5 rounded-2xl bg-stone-50 dark:bg-stone-950 border border-stone-200 dark:border-stone-800 space-y-2 text-xs">
                   <div className="flex items-center gap-1.5 text-stone-700 dark:text-stone-300 font-bold">
                     <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
-                    <span>Seguridad de Autor: Cambiar clave/PIN</span>
+                    <span>Seguridad: Cambiar PIN de Administrador</span>
                   </div>
                   <form onSubmit={handleChangePin} className="flex gap-2">
                     <input
@@ -251,12 +251,12 @@ export const IdentityModal: React.FC<IdentityModalProps> = ({
               )}
             </div>
           ) : (
-            /* Protected Author Login Box with PIN */
+            /* Protected Admin Login Box with PIN */
             <div className="p-4 rounded-2xl bg-gradient-to-r from-rose-50 to-amber-50 dark:from-rose-950/40 dark:to-amber-950/40 border border-rose-200 dark:border-rose-900/60 space-y-3">
               <div className="flex items-center justify-between gap-2">
                 <span className="inline-flex items-center gap-1.5 text-xs font-bold text-rose-950 dark:text-rose-300">
                   <Lock className="w-3.5 h-3.5 text-amber-600" />
-                  Acceso de Autor Protegido
+                  Acceso de Administración
                 </span>
                 <span className="text-[10px] uppercase font-mono px-2 py-0.5 rounded-full bg-amber-100 dark:bg-amber-950 text-amber-900 dark:text-amber-300 font-bold border border-amber-300 dark:border-amber-800">
                   PIN Requerido
@@ -264,7 +264,7 @@ export const IdentityModal: React.FC<IdentityModalProps> = ({
               </div>
 
               <p className="text-xs text-stone-700 dark:text-stone-300 leading-relaxed">
-                ¿Eres <strong>Ricardo Aguado</strong>? Introduce tu PIN de autor para desbloquear los permisos de edición sobre <em>Más Vida, Menos Redes</em>.
+                Introduce el <strong>PIN de Administrador</strong> para acceder a las herramientas de gestión y edición del proyecto de referencia.
               </p>
 
               {showPinPrompt ? (
@@ -276,7 +276,7 @@ export const IdentityModal: React.FC<IdentityModalProps> = ({
                         type="password"
                         required
                         autoFocus
-                        placeholder="Introduce tu PIN (por defecto: 2026)"
+                        placeholder="Introduce el PIN (por defecto: 2026)"
                         value={pinInput}
                         onChange={(e) => {
                           setPinInput(e.target.value);
@@ -307,7 +307,7 @@ export const IdentityModal: React.FC<IdentityModalProps> = ({
                   className="w-full py-2.5 px-4 rounded-xl text-xs font-bold bg-rose-950 hover:bg-rose-900 text-white shadow-xs cursor-pointer flex items-center justify-center gap-2 active:scale-95 transition-all"
                 >
                   <Lock className="w-3.5 h-3.5 text-amber-400" />
-                  <span>Entrar como Ricardo Aguado (Requiere PIN)</span>
+                  <span>Acceso Administrador (Requiere PIN)</span>
                 </button>
               )}
             </div>

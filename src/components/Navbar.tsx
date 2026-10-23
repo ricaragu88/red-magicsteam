@@ -36,12 +36,8 @@ export const Navbar: React.FC<NavbarProps> = ({
           
           {/* Logo & Brand Identity */}
           <div className="flex items-center gap-3 shrink-0">
-            <div className="relative w-10 h-10 sm:w-11 sm:h-11 rounded-full overflow-hidden ring-2 ring-rose-900/20 dark:ring-rose-400/30 shadow-xs shrink-0">
-              <img
-                src="/images/docenteRicardo-aguado-1.jpg"
-                alt="Docente Innovador"
-                className="w-full h-full object-cover"
-              />
+            <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-2xl bg-gradient-to-br from-rose-950 via-rose-900 to-amber-900 text-white flex items-center justify-center shadow-xs border border-rose-800/40 shrink-0">
+              <Sparkles className="w-5 h-5 text-amber-300" />
             </div>
             <div>
               <div className="flex items-center gap-2">
